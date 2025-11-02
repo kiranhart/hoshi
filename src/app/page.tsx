@@ -98,7 +98,7 @@ export default function Home() {
                 <p className="mx-auto mb-8 max-w-xl text-lg text-gray-400">A minimalist Next.js starter to quick-start development</p>
 
                 <div className="flex justify-center gap-4">
-                    <Link href="#" className="rounded-full bg-cyan-500 px-6 py-3 font-semibold text-black shadow-lg transition hover:bg-cyan-400">
+                    <Link href="/sign-in" className="rounded-full bg-cyan-500 px-6 py-3 font-semibold text-black shadow-lg transition hover:bg-cyan-400">
                         Sign In
                     </Link>
                 </div>
