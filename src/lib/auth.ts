@@ -11,6 +11,10 @@ export const auth = betterAuth({
         provider: 'mysql',
         schema: schema
     }),
+    baseURL: env.BETTER_AUTH_URL || process.env.BETTER_AUTH_URL || (process.env.NODE_ENV === 'production' 
+        ? `https://${process.env.VERCEL_URL || 'localhost:3000'}`
+        : 'http://localhost:3000'),
+    secret: env.BETTER_AUTH_SECRET || process.env.BETTER_AUTH_SECRET || 'your-secret-key-change-in-production',
     socialProviders: {
         google: {
             prompt: "select_account", 
