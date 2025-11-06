@@ -1,87 +1,549 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 import { motion } from 'framer-motion';
-import { Calendar, Clock, Globe, LogOut, Mail, Shield, Star } from 'lucide-react';
+import { Activity, Heart, Pill, Stethoscope, User } from 'lucide-react';
+import { toast } from 'sonner';
 
+import { AllergiesSection } from '@/components/dashboard/AllergiesSection';
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
+import { DeleteModal } from '@/components/dashboard/DeleteModal';
+import { EmergencyContactsSection } from '@/components/dashboard/EmergencyContactsSection';
+import { MedicinesSection } from '@/components/dashboard/MedicinesSection';
+import { PageInformationSection } from '@/components/dashboard/PageInformationSection';
+import { QRCodeSection } from '@/components/dashboard/QRCodeSection';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
 
 export default function DashboardPage() {
     const { data: session, isPending } = authClient.useSession();
     const router = useRouter();
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [hasUsername, setHasUsername] = useState<boolean | null>(null);
+    const [isCheckingUsername, setIsCheckingUsername] = useState(true);
+    const [username, setUsername] = useState('');
+    const [usernameError, setUsernameError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Page data state
+    const [pageData, setPageData] = useState<any>(null);
+    const [isLoadingPage, setIsLoadingPage] = useState(true);
+    const [isSavingPage, setIsSavingPage] = useState(false);
+    const [pageForm, setPageForm] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        description: '',
+        isPrivate: false,
+    });
+
+    // Medicines state
+    const [medicines, setMedicines] = useState<any[]>([]);
+    const [isLoadingMedicines, setIsLoadingMedicines] = useState(false);
+    const [isAddingMedicine, setIsAddingMedicine] = useState(false);
+    const [editingMedicine, setEditingMedicine] = useState<string | null>(null);
+    const [editingMedicineData, setEditingMedicineData] = useState<{ name: string; dosage: string; frequency: string } | null>(null);
+    const [newMedicine, setNewMedicine] = useState({ name: '', dosage: '', frequency: '' });
+
+    // Allergies state
+    const [allergies, setAllergies] = useState<any[]>([]);
+    const [isLoadingAllergies, setIsLoadingAllergies] = useState(false);
+    const [isAddingAllergy, setIsAddingAllergy] = useState(false);
+    const [editingAllergy, setEditingAllergy] = useState<string | null>(null);
+    const [editingAllergyData, setEditingAllergyData] = useState<{ name: string; reaction: string; severity: string; isMedicine: boolean }>({
+        name: '',
+        reaction: '',
+        severity: 'mild',
+        isMedicine: false,
+    });
+    const [newAllergy, setNewAllergy] = useState({ name: '', reaction: '', severity: 'mild', isMedicine: false });
+
+    // Emergency contacts state
+    const [contacts, setContacts] = useState<any[]>([]);
+    const [isLoadingContacts, setIsLoadingContacts] = useState(false);
+    const [isAddingContact, setIsAddingContact] = useState(false);
+    const [editingContact, setEditingContact] = useState<string | null>(null);
+    const [editingContactData, setEditingContactData] = useState<{ name: string; phone: string; email: string; relation: string } | null>(null);
+    const [newContact, setNewContact] = useState({ name: '', phone: '', email: '', relation: '' });
+
+    // Delete confirmation modal state
+    const [deleteModal, setDeleteModal] = useState<{
+        isOpen: boolean;
+        type: 'medicine' | 'allergy' | 'contact' | null;
+        id: string | null;
+        name: string;
+        isDeleting: boolean;
+    }>({
+        isOpen: false,
+        type: null,
+        id: null,
+        name: '',
+        isDeleting: false,
+    });
+
+    // Check username and load page data on mount
     useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d')!;
-        let width = (canvas.width = window.innerWidth);
-        let height = (canvas.height = window.innerHeight);
+        if (session?.user?.id) {
+            checkUsername();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [session]);
 
-        const numStars = 150;
-        const minZ = 0.5;
-        const stars: { x: number; y: number; z: number }[] = [];
+    // Load page data when username is set
+    useEffect(() => {
+        if (hasUsername === true) {
+            loadPageData();
+            loadMedicines();
+            loadAllergies();
+            loadContacts();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [hasUsername]);
 
-        const createStar = () => ({
-            x: Math.random() * width - width / 2,
-            y: Math.random() * height - height / 2,
-            z: Math.random() * width + minZ,
-        });
-
-        for (let i = 0; i < numStars; i++) stars.push(createStar());
-
-        const draw = () => {
-            ctx.fillStyle = '#030014';
-            ctx.fillRect(0, 0, width, height);
-
-            for (let i = 0; i < numStars; i++) {
-                const star = stars[i];
-                star.z -= 1.5;
-
-                if (star.z <= minZ) {
-                    stars[i] = createStar();
-                    continue;
-                }
-
-                const k = 128 / star.z;
-                const px = star.x * k + width / 2;
-                const py = star.y * k + height / 2;
-
-                const rawSize = (1 - star.z / width) * 2;
-                const size = Math.max(0.25, rawSize);
-
-                if (Number.isFinite(px) && Number.isFinite(py) && Number.isFinite(size) && size > 0 && px >= 0 && px <= width && py >= 0 && py <= height) {
-                    ctx.beginPath();
-                    ctx.arc(px, py, size, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(255,255,255,${0.7 * (1 - star.z / width)})`;
-                    ctx.fill();
-                }
+    const checkUsername = async () => {
+        try {
+            setIsCheckingUsername(true);
+            const response = await fetch('/api/user/username');
+            if (response.ok) {
+                const data = await response.json();
+                setHasUsername(data.hasUsername);
+            } else {
+                console.error('Failed to check username');
+                setHasUsername(false);
             }
+        } catch (error) {
+            console.error('Error checking username:', error);
+            setHasUsername(false);
+        } finally {
+            setIsCheckingUsername(false);
+        }
+    };
 
-            requestAnimationFrame(draw);
-        };
+    const handleUsernameSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setUsernameError('');
+        setIsSubmitting(true);
 
-        draw();
+        try {
+            const response = await fetch('/api/user/username', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username }),
+            });
 
-        const handleResize = () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        };
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+            if (response.ok) {
+                setHasUsername(true);
+                setUsername('');
+            } else {
+                const data = await response.json();
+                setUsernameError(data.error || 'Failed to set username');
+            }
+        } catch (error) {
+            setUsernameError('An error occurred. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    // Load page data
+    const loadPageData = async () => {
+        try {
+            setIsLoadingPage(true);
+            const response = await fetch('/api/page');
+            if (response.ok) {
+                const data = await response.json();
+                setPageData(data.page);
+                setPageForm({
+                    firstName: data.page?.firstName || '',
+                    lastName: data.page?.lastName || '',
+                    email: data.page?.email || '',
+                    phone: data.page?.phone || '',
+                    description: data.page?.description || '',
+                    isPrivate: data.page?.isPrivate || false,
+                });
+            }
+        } catch (error) {
+            console.error('Error loading page data:', error);
+        } finally {
+            setIsLoadingPage(false);
+        }
+    };
+
+    // Save page data
+    const savePageData = async () => {
+        try {
+            setIsSavingPage(true);
+            const response = await fetch('/api/page', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(pageForm),
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setPageData(data.page);
+                toast.success('Page information saved successfully!', {
+                    description: 'Your changes have been saved.',
+                });
+            } else {
+                toast.error('Failed to save page information', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error saving page data:', error);
+            toast.error('Error saving page information', {
+                description: 'An unexpected error occurred.',
+            });
+        } finally {
+            setIsSavingPage(false);
+        }
+    };
+
+    // Medicines functions
+    const loadMedicines = async () => {
+        try {
+            setIsLoadingMedicines(true);
+            const response = await fetch('/api/page/medicines');
+            if (response.ok) {
+                const data = await response.json();
+                setMedicines(data.medicines || []);
+            }
+        } catch (error) {
+            console.error('Error loading medicines:', error);
+        } finally {
+            setIsLoadingMedicines(false);
+        }
+    };
+
+    const addMedicine = async () => {
+        if (!newMedicine.name.trim() || isAddingMedicine) return;
+        try {
+            setIsAddingMedicine(true);
+            const response = await fetch('/api/page/medicines', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newMedicine),
+            });
+            if (response.ok) {
+                setNewMedicine({ name: '', dosage: '', frequency: '' });
+                await loadMedicines();
+                toast.success('Medicine added successfully!', {
+                    description: `${newMedicine.name} has been added to your list.`,
+                });
+            } else {
+                toast.error('Failed to add medicine', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error adding medicine:', error);
+            toast.error('Error adding medicine', {
+                description: 'An unexpected error occurred.',
+            });
+        } finally {
+            setIsAddingMedicine(false);
+        }
+    };
+
+    const updateMedicine = async (id: string, medicine: any) => {
+        try {
+            const response = await fetch(`/api/page/medicines/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(medicine),
+            });
+            if (response.ok) {
+                setEditingMedicine(null);
+                loadMedicines();
+                toast.success('Medicine updated successfully!', {
+                    description: `${medicine.name} has been updated.`,
+                });
+            } else {
+                toast.error('Failed to update medicine', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error updating medicine:', error);
+            toast.error('Error updating medicine', {
+                description: 'An unexpected error occurred.',
+            });
+        }
+    };
+
+    const deleteMedicine = async (id: string, name: string) => {
+        setDeleteModal({
+            isOpen: true,
+            type: 'medicine',
+            id,
+            name,
+            isDeleting: false,
+        });
+    };
+
+    const confirmDeleteMedicine = async () => {
+        if (!deleteModal.id) return;
+        try {
+            setDeleteModal((prev) => ({ ...prev, isDeleting: true }));
+            const response = await fetch(`/api/page/medicines/${deleteModal.id}`, { method: 'DELETE' });
+            if (response.ok) {
+                loadMedicines();
+                setDeleteModal({ isOpen: false, type: null, id: null, name: '', isDeleting: false });
+                toast.success('Medicine deleted successfully!', {
+                    description: `${deleteModal.name} has been removed from your list.`,
+                });
+            } else {
+                setDeleteModal((prev) => ({ ...prev, isDeleting: false }));
+                toast.error('Failed to delete medicine', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error deleting medicine:', error);
+            setDeleteModal((prev) => ({ ...prev, isDeleting: false }));
+            toast.error('Error deleting medicine', {
+                description: 'An unexpected error occurred.',
+            });
+        }
+    };
+
+    // Allergies functions
+    const loadAllergies = async () => {
+        try {
+            setIsLoadingAllergies(true);
+            const response = await fetch('/api/page/allergies');
+            if (response.ok) {
+                const data = await response.json();
+                setAllergies(data.allergies || []);
+            }
+        } catch (error) {
+            console.error('Error loading allergies:', error);
+        } finally {
+            setIsLoadingAllergies(false);
+        }
+    };
+
+    const addAllergy = async () => {
+        if (!newAllergy.name.trim() || isAddingAllergy) return;
+        try {
+            setIsAddingAllergy(true);
+            const response = await fetch('/api/page/allergies', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newAllergy),
+            });
+            if (response.ok) {
+                setNewAllergy({ name: '', reaction: '', severity: 'mild', isMedicine: false });
+                await loadAllergies();
+                toast.success('Allergy added successfully!', {
+                    description: `${newAllergy.name} has been added to your list.`,
+                });
+            } else {
+                toast.error('Failed to add allergy', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error adding allergy:', error);
+            toast.error('Error adding allergy', {
+                description: 'An unexpected error occurred.',
+            });
+        } finally {
+            setIsAddingAllergy(false);
+        }
+    };
+
+    const updateAllergy = async (id: string, allergyData: { name: string; reaction: string; severity: string; isMedicine: boolean }) => {
+        try {
+            const response = await fetch(`/api/page/allergies/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(allergyData),
+            });
+            if (response.ok) {
+                setEditingAllergy(null);
+                setEditingAllergyData({ name: '', reaction: '', severity: 'mild', isMedicine: false });
+                loadAllergies();
+                toast.success('Allergy updated successfully!', {
+                    description: `${allergyData.name} has been updated.`,
+                });
+            } else {
+                toast.error('Failed to update allergy', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error updating allergy:', error);
+            toast.error('Error updating allergy', {
+                description: 'An unexpected error occurred.',
+            });
+        }
+    };
+
+    const deleteAllergy = async (id: string, name: string) => {
+        setDeleteModal({
+            isOpen: true,
+            type: 'allergy',
+            id,
+            name,
+            isDeleting: false,
+        });
+    };
+
+    const confirmDeleteAllergy = async () => {
+        if (!deleteModal.id) return;
+        try {
+            setDeleteModal((prev) => ({ ...prev, isDeleting: true }));
+            const response = await fetch(`/api/page/allergies/${deleteModal.id}`, { method: 'DELETE' });
+            if (response.ok) {
+                loadAllergies();
+                setDeleteModal({ isOpen: false, type: null, id: null, name: '', isDeleting: false });
+                toast.success('Allergy deleted successfully!', {
+                    description: `${deleteModal.name} has been removed from your list.`,
+                });
+            } else {
+                setDeleteModal((prev) => ({ ...prev, isDeleting: false }));
+                toast.error('Failed to delete allergy', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error deleting allergy:', error);
+            setDeleteModal((prev) => ({ ...prev, isDeleting: false }));
+            toast.error('Error deleting allergy', {
+                description: 'An unexpected error occurred.',
+            });
+        }
+    };
+
+    // Emergency contacts functions
+    const loadContacts = async () => {
+        try {
+            setIsLoadingContacts(true);
+            const response = await fetch('/api/page/emergency-contacts');
+            if (response.ok) {
+                const data = await response.json();
+                setContacts(data.contacts || []);
+            }
+        } catch (error) {
+            console.error('Error loading contacts:', error);
+        } finally {
+            setIsLoadingContacts(false);
+        }
+    };
+
+    const addContact = async () => {
+        if (!newContact.name.trim() || isAddingContact) return;
+        try {
+            setIsAddingContact(true);
+            const response = await fetch('/api/page/emergency-contacts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newContact),
+            });
+            if (response.ok) {
+                setNewContact({ name: '', phone: '', email: '', relation: '' });
+                await loadContacts();
+                toast.success('Emergency contact added successfully!', {
+                    description: `${newContact.name} has been added to your list.`,
+                });
+            } else {
+                toast.error('Failed to add emergency contact', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error adding contact:', error);
+            toast.error('Error adding emergency contact', {
+                description: 'An unexpected error occurred.',
+            });
+        } finally {
+            setIsAddingContact(false);
+        }
+    };
+
+    const updateContact = async (id: string, contact: any) => {
+        try {
+            const response = await fetch(`/api/page/emergency-contacts/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(contact),
+            });
+            if (response.ok) {
+                setEditingContact(null);
+                loadContacts();
+                toast.success('Emergency contact updated successfully!', {
+                    description: `${contact.name} has been updated.`,
+                });
+            } else {
+                toast.error('Failed to update emergency contact', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error updating contact:', error);
+            toast.error('Error updating emergency contact', {
+                description: 'An unexpected error occurred.',
+            });
+        }
+    };
+
+    const deleteContact = async (id: string, name: string) => {
+        setDeleteModal({
+            isOpen: true,
+            type: 'contact',
+            id,
+            name,
+            isDeleting: false,
+        });
+    };
+
+    const confirmDeleteContact = async () => {
+        if (!deleteModal.id) return;
+        try {
+            setDeleteModal((prev) => ({ ...prev, isDeleting: true }));
+            const response = await fetch(`/api/page/emergency-contacts/${deleteModal.id}`, { method: 'DELETE' });
+            if (response.ok) {
+                loadContacts();
+                setDeleteModal({ isOpen: false, type: null, id: null, name: '', isDeleting: false });
+                toast.success('Emergency contact deleted successfully!', {
+                    description: `${deleteModal.name} has been removed from your list.`,
+                });
+            } else {
+                setDeleteModal((prev) => ({ ...prev, isDeleting: false }));
+                toast.error('Failed to delete emergency contact', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error deleting contact:', error);
+            setDeleteModal((prev) => ({ ...prev, isDeleting: false }));
+            toast.error('Error deleting emergency contact', {
+                description: 'An unexpected error occurred.',
+            });
+        }
+    };
+
+    const handleConfirmDelete = async () => {
+        if (deleteModal.type === 'medicine') {
+            await confirmDeleteMedicine();
+        } else if (deleteModal.type === 'allergy') {
+            await confirmDeleteAllergy();
+        } else if (deleteModal.type === 'contact') {
+            await confirmDeleteContact();
+        }
+    };
 
     const handleSignOut = async () => {
         await authClient.signOut();
         router.push('/');
     };
 
-    if (isPending) {
+    if (isPending || isCheckingUsername) {
         return (
-            <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#030014] text-gray-100">
+            <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white text-gray-900">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
                     <motion.div
                         className="mb-4 flex justify-center"
@@ -89,9 +551,11 @@ export default function DashboardPage() {
                         animate={{ rotate: 360 }}
                         transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
                     >
-                        <Star className="h-12 w-12 text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.6)]" />
+                        <div className="rounded-full bg-gradient-to-br from-teal-400 via-cyan-400 to-blue-500 p-3">
+                            <Heart className="h-8 w-8 text-white" fill="white" />
+                        </div>
                     </motion.div>
-                    <p className="text-lg text-gray-400">Loading...</p>
+                    <p className="text-lg text-gray-600">Loading...</p>
                 </motion.div>
             </main>
         );
@@ -99,236 +563,350 @@ export default function DashboardPage() {
 
     if (!session) {
         return (
-            <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#030014] text-gray-100">
+            <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white text-gray-900">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-md"
+                    className="rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
                 >
-                    <p className="text-center text-gray-400">Not authenticated. Please sign in.</p>
+                    <p className="text-center text-gray-600">Not authenticated. Please sign in.</p>
                 </motion.div>
             </main>
         );
     }
 
-    // Debug: Log session data to check if image exists
-    console.log('Session data:', session);
-    console.log('User image URL:', session.user?.image);
+    // Show onboarding if username is not set
+    if (hasUsername === false) {
+        return (
+            <main className="relative min-h-screen overflow-hidden bg-white text-gray-900">
+                {/* Animated Gradient Background */}
+                <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                    <motion.div
+                        className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-r from-teal-400/40 via-cyan-400/40 to-blue-500/40 blur-3xl"
+                        animate={{
+                            x: [0, 100, 0],
+                            y: [0, 50, 0],
+                            scale: [1, 1.2, 1],
+                        }}
+                        transition={{
+                            duration: 20,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                        }}
+                    />
+                    <motion.div
+                        className="absolute -right-40 -bottom-40 h-80 w-80 rounded-full bg-gradient-to-r from-pink-400/40 via-purple-400/40 to-indigo-500/40 blur-3xl"
+                        animate={{
+                            x: [0, -100, 0],
+                            y: [0, -50, 0],
+                            scale: [1, 1.2, 1],
+                        }}
+                        transition={{
+                            duration: 20,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                            delay: 0.5,
+                        }}
+                    />
+                </div>
+
+                {/* Floating Medical Icons */}
+                <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                    {[
+                        { icon: Heart, x: '10%', y: '20%', delay: 0, color: 'text-pink-200' },
+                        { icon: Pill, x: '85%', y: '15%', delay: 0.3, color: 'text-cyan-200' },
+                        { icon: Stethoscope, x: '15%', y: '70%', delay: 0.6, color: 'text-emerald-200' },
+                        { icon: Activity, x: '90%', y: '75%', delay: 0.9, color: 'text-purple-200' },
+                    ].map((item, i) => (
+                        <motion.div
+                            key={i}
+                            className={`absolute ${item.color}`}
+                            style={{ left: item.x, top: item.y }}
+                            animate={{
+                                y: [0, -30, 0],
+                                rotate: [0, 10, -10, 0],
+                            }}
+                            transition={{
+                                duration: 4 + i,
+                                repeat: Infinity,
+                                ease: 'easeInOut',
+                                delay: item.delay,
+                            }}
+                        >
+                            <item.icon className="h-12 w-12 md:h-16 md:w-16" />
+                        </motion.div>
+                    ))}
+                </div>
+
+                <div className="relative z-10 flex min-h-screen items-center justify-center px-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="w-full max-w-md rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+                    >
+                        <div className="mb-6 text-center">
+                            <motion.div
+                                className="mb-4 flex justify-center"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ delay: 0.2, type: 'spring' }}
+                            >
+                                <div className="relative">
+                                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-500 opacity-50 blur-xl" />
+                                    <div className="relative rounded-full bg-gradient-to-br from-teal-400 via-cyan-400 to-blue-500 p-4">
+                                        <User className="h-8 w-8 text-white" />
+                                    </div>
+                                </div>
+                            </motion.div>
+                            <h2 className="mb-2 bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-600 bg-clip-text text-3xl font-bold text-transparent">
+                                Welcome to Medilink! 🎉
+                            </h2>
+                            <p className="text-gray-600">Let's get you set up with a username to get started.</p>
+                        </div>
+
+                        <form onSubmit={handleUsernameSubmit} className="space-y-4">
+                            <div>
+                                <label htmlFor="username" className="mb-2 block text-sm font-medium text-gray-700">
+                                    Choose a Username
+                                </label>
+                                <input
+                                    id="username"
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => {
+                                        setUsername(e.target.value);
+                                        setUsernameError('');
+                                    }}
+                                    placeholder="johndoe"
+                                    className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
+                                    required
+                                    pattern="[a-zA-Z0-9_-]{3,50}"
+                                    title="3-50 characters, letters, numbers, underscores, and hyphens only"
+                                />
+                                {usernameError && <p className="mt-2 text-sm text-red-500">{usernameError}</p>}
+                                <p className="mt-2 text-xs text-gray-500">3-50 characters. Letters, numbers, underscores, and hyphens only.</p>
+                            </div>
+
+                            <Button
+                                type="submit"
+                                disabled={isSubmitting || !username.trim()}
+                                className="w-full cursor-pointer bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30 hover:from-teal-600 hover:via-cyan-600 hover:to-blue-600 hover:shadow-xl hover:shadow-cyan-500/40 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                {isSubmitting ? 'Setting up...' : 'Continue'}
+                            </Button>
+                        </form>
+                    </motion.div>
+                </div>
+            </main>
+        );
+    }
 
     return (
-        <main className="relative min-h-screen overflow-hidden bg-[#030014] text-gray-100">
-            {/* Starfield Canvas */}
-            <canvas ref={canvasRef} className="absolute inset-0 z-0" />
+        <main className="relative min-h-screen overflow-hidden bg-white text-gray-900">
+            {/* Animated Gradient Background */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                <motion.div
+                    className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-r from-teal-400/40 via-cyan-400/40 to-blue-500/40 blur-3xl"
+                    animate={{
+                        x: [0, 100, 0],
+                        y: [0, 50, 0],
+                        scale: [1, 1.2, 1],
+                    }}
+                    transition={{
+                        duration: 20,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                    }}
+                />
+                <motion.div
+                    className="absolute -right-40 -bottom-40 h-80 w-80 rounded-full bg-gradient-to-r from-pink-400/40 via-purple-400/40 to-indigo-500/40 blur-3xl"
+                    animate={{
+                        x: [0, -100, 0],
+                        y: [0, -50, 0],
+                        scale: [1, 1.2, 1],
+                    }}
+                    transition={{
+                        duration: 20,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                        delay: 0.5,
+                    }}
+                />
+                <motion.div
+                    className="absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-emerald-400/30 via-teal-400/30 to-cyan-400/30 blur-3xl"
+                    animate={{
+                        scale: [1, 1.3, 1],
+                        opacity: [0.4, 0.6, 0.4],
+                    }}
+                    transition={{
+                        duration: 15,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                    }}
+                />
+            </div>
 
-            {/* Glow + Noise Layers */}
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(50,50,100,0.3),transparent)]" />
-            <div className="pointer-events-none absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-soft-light" />
+            {/* Floating Medical Icons */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                {[
+                    { icon: Heart, x: '10%', y: '20%', delay: 0, color: 'text-pink-200' },
+                    { icon: Pill, x: '85%', y: '15%', delay: 0.3, color: 'text-cyan-200' },
+                    { icon: Stethoscope, x: '15%', y: '70%', delay: 0.6, color: 'text-emerald-200' },
+                    { icon: Activity, x: '90%', y: '75%', delay: 0.9, color: 'text-purple-200' },
+                ].map((item, i) => (
+                    <motion.div
+                        key={i}
+                        className={`absolute ${item.color}`}
+                        style={{ left: item.x, top: item.y }}
+                        animate={{
+                            y: [0, -30, 0],
+                            rotate: [0, 10, -10, 0],
+                        }}
+                        transition={{
+                            duration: 4 + i,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                            delay: item.delay,
+                        }}
+                    >
+                        <item.icon className="h-12 w-12 md:h-16 md:w-16" />
+                    </motion.div>
+                ))}
+            </div>
 
             {/* Content */}
             <div className="relative z-10 min-h-screen">
-                {/* Header */}
-                <header className="border-b border-white/10 bg-white/5 backdrop-blur-md">
-                    <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-                        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-3">
-                            <motion.div initial={{ rotate: 0 }} animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 20, ease: 'linear' }}>
-                                <Star className="h-6 w-6 text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.6)]" />
-                            </motion.div>
-                            <h1 className="bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-2xl font-bold text-transparent">
-                                Hoshi
-                            </h1>
-                        </motion.div>
-
-                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-4">
-                            <div className="hidden items-center gap-3 sm:flex">
-                                {session.user.image ? (
-                                    <img
-                                        src={session.user.image}
-                                        alt={session.user.name || 'User'}
-                                        className="h-8 w-8 rounded-full border border-cyan-400/50 object-cover"
-                                        onError={(e) => {
-                                            console.error('Failed to load header profile image:', session.user.image);
-                                            e.currentTarget.style.display = 'none';
-                                        }}
-                                    />
-                                ) : (
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-cyan-400/50 bg-gradient-to-br from-cyan-400 to-blue-500">
-                                        <span className="text-xs font-semibold text-white">{session.user.name?.charAt(0)?.toUpperCase() || 'U'}</span>
-                                    </div>
-                                )}
-                                <div className="text-right">
-                                    <p className="text-sm font-semibold text-gray-100">{session.user.name}</p>
-                                    <p className="text-xs text-gray-400">{session.user.email}</p>
-                                </div>
-                            </div>
-                            <Button
-                                onClick={handleSignOut}
-                                variant="outline"
-                                className="border-white/10 bg-white/5 text-gray-100 hover:bg-white/10 hover:text-cyan-400"
-                            >
-                                <LogOut className="mr-2 h-4 w-4" />
-                                Sign Out
-                            </Button>
-                        </motion.div>
-                    </div>
-                </header>
+                <DashboardHeader
+                    userName={session.user.name || ''}
+                    userEmail={session.user.email || ''}
+                    userImage={session.user.image || null}
+                    onSignOut={handleSignOut}
+                />
 
                 {/* Main Content */}
                 <div className="mx-auto max-w-7xl px-6 py-12">
-                    {/* Welcome Section */}
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-12">
-                        <h2 className="mb-2 bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-4xl font-bold text-transparent md:text-5xl">
-                            Welcome back, {session.user.name?.split(' ')[0] || 'User'}! ✨
-                        </h2>
-                        <p className="text-lg text-gray-400">Here's what's happening with your account today.</p>
-                    </motion.div>
-
-                    {/* User Info Card */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6 }}
-                        className="mb-12 rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-md"
-                    >
-                        <h3 className="mb-6 text-2xl font-semibold text-cyan-300">Profile Information</h3>
-                        <div className="grid gap-6 sm:grid-cols-2">
-                            <div className="flex items-center gap-4 rounded-lg border border-white/10 bg-white/5 p-4">
-                                {session.user.image ? (
-                                    <img
-                                        src={session.user.image}
-                                        alt={session.user.name || 'User'}
-                                        className="h-12 w-12 rounded-lg border border-cyan-400/50 object-cover"
-                                        onError={(e) => {
-                                            console.error('Failed to load profile image:', session.user.image);
-                                            e.currentTarget.style.display = 'none';
-                                        }}
-                                    />
-                                ) : (
-                                    <div className="rounded-lg bg-gradient-to-br from-cyan-400 to-blue-500 p-3">
-                                        <Star className="h-5 w-5 text-white" />
-                                    </div>
-                                )}
-                                <div>
-                                    <p className="text-sm text-gray-400">Name</p>
-                                    <p className="text-lg font-semibold text-gray-100">{session.user.name}</p>
+                    {isLoadingPage ? (
+                        <div className="flex items-center justify-center py-12">
+                            <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}>
+                                <div className="rounded-full bg-gradient-to-br from-teal-400 via-cyan-400 to-blue-500 p-3">
+                                    <Heart className="h-6 w-6 text-white" fill="white" />
                                 </div>
-                            </div>
-                            <div className="flex items-center gap-4 rounded-lg border border-white/10 bg-white/5 p-4">
-                                <div className="rounded-lg bg-gradient-to-br from-blue-400 to-indigo-500 p-3">
-                                    <Mail className="h-5 w-5 text-white" />
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-400">Email</p>
-                                    <p className="text-lg font-semibold text-gray-100">{session.user.email}</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4 rounded-lg border border-white/10 bg-white/5 p-4">
-                                <div className="rounded-lg bg-gradient-to-br from-indigo-400 to-purple-500 p-3">
-                                    <Calendar className="h-5 w-5 text-white" />
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-400">Member Since</p>
-                                    <p className="text-lg font-semibold text-gray-100">
-                                        {session.session?.createdAt
-                                            ? new Date(session.session.createdAt).toLocaleDateString('en-US', {
-                                                  month: 'long',
-                                                  year: 'numeric',
-                                              })
-                                            : new Date().toLocaleDateString('en-US', {
-                                                  month: 'long',
-                                                  year: 'numeric',
-                                              })}
-                                    </p>
-                                </div>
-                            </div>
+                            </motion.div>
                         </div>
-                    </motion.div>
+                    ) : (
+                        <>
+                            {/* Welcome Section */}
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-8">
+                                <h2 className="mb-2 bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-600 bg-clip-text text-4xl font-bold text-transparent md:text-5xl">
+                                    Manage Your Medical Profile
+                                </h2>
+                                <p className="text-lg text-gray-600">Fill out your information to create your medical link page.</p>
+                            </motion.div>
 
-                    {/* Active Session Info */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.8 }}
-                        className="mb-12 rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-md"
-                    >
-                        <h3 className="mb-6 text-2xl font-semibold text-cyan-300">Active Session</h3>
-                        <div className="grid gap-6 sm:grid-cols-2">
-                            <div className="flex items-center gap-4 rounded-lg border border-white/10 bg-white/5 p-4">
-                                <div className="rounded-lg bg-gradient-to-br from-green-400 to-emerald-500 p-3">
-                                    <Shield className="h-5 w-5 text-white" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-sm text-gray-400">Session ID</p>
-                                    <p className="text-lg font-semibold break-all text-gray-100">{session.session?.id?.slice(0, 8) || 'N/A'}...</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4 rounded-lg border border-white/10 bg-white/5 p-4">
-                                <div className="rounded-lg bg-gradient-to-br from-purple-400 to-pink-500 p-3">
-                                    <Clock className="h-5 w-5 text-white" />
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-400">Session Started</p>
-                                    <p className="text-lg font-semibold text-gray-100">
-                                        {session.session?.createdAt
-                                            ? new Date(session.session.createdAt).toLocaleString('en-US', {
-                                                  month: 'short',
-                                                  day: 'numeric',
-                                                  year: 'numeric',
-                                                  hour: '2-digit',
-                                                  minute: '2-digit',
-                                              })
-                                            : 'N/A'}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4 rounded-lg border border-white/10 bg-white/5 p-4">
-                                <div className="rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 p-3">
-                                    <Clock className="h-5 w-5 text-white" />
-                                </div>
-                                <div>
-                                    <p className="text-sm text-gray-400">Expires At</p>
-                                    <p className="text-lg font-semibold text-gray-100">
-                                        {session.session?.expiresAt
-                                            ? new Date(session.session.expiresAt).toLocaleString('en-US', {
-                                                  month: 'short',
-                                                  day: 'numeric',
-                                                  year: 'numeric',
-                                                  hour: '2-digit',
-                                                  minute: '2-digit',
-                                              })
-                                            : 'N/A'}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4 rounded-lg border border-white/10 bg-white/5 p-4">
-                                <div className="rounded-lg bg-gradient-to-br from-cyan-400 to-blue-500 p-3">
-                                    <Globe className="h-5 w-5 text-white" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-sm text-gray-400">User Agent</p>
-                                    <p className="truncate text-lg font-semibold text-gray-100">
-                                        {session.session?.userAgent
-                                            ? session.session.userAgent.length > 50
-                                                ? `${session.session.userAgent.slice(0, 50)}...`
-                                                : session.session.userAgent
-                                            : 'Not available'}
-                                    </p>
-                                </div>
-                            </div>
-                            {session.session?.ipAddress && (
-                                <div className="flex items-center gap-4 rounded-lg border border-white/10 bg-white/5 p-4 sm:col-span-2">
-                                    <div className="rounded-lg bg-gradient-to-br from-indigo-400 to-purple-500 p-3">
-                                        <Globe className="h-5 w-5 text-white" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-400">IP Address</p>
-                                        <p className="text-lg font-semibold text-gray-100">{session.session.ipAddress}</p>
-                                    </div>
-                                </div>
+                            {pageData?.uniqueKey && (
+                                <QRCodeSection
+                                    uniqueKey={pageData.uniqueKey}
+                                    pageUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/u/${pageData.uniqueKey}`}
+                                />
                             )}
-                        </div>
-                    </motion.div>
+
+                            <PageInformationSection
+                                pageForm={pageForm}
+                                pageData={pageData}
+                                isSavingPage={isSavingPage}
+                                onFormChange={(field, value) => setPageForm({ ...pageForm, [field]: value })}
+                                onSave={savePageData}
+                            />
+
+                            <MedicinesSection
+                                medicines={medicines}
+                                newMedicine={newMedicine}
+                                editingMedicine={editingMedicine}
+                                editingMedicineData={editingMedicineData}
+                                isAddingMedicine={isAddingMedicine}
+                                onNewMedicineChange={(field, value) => setNewMedicine({ ...newMedicine, [field]: value })}
+                                onAddMedicine={addMedicine}
+                                onEditStart={(medicine) => {
+                                    setEditingMedicine(medicine.id);
+                                    setEditingMedicineData({
+                                        name: medicine.name,
+                                        dosage: medicine.dosage || '',
+                                        frequency: medicine.frequency || '',
+                                    });
+                                }}
+                                onEditCancel={() => {
+                                    setEditingMedicine(null);
+                                    setEditingMedicineData(null);
+                                }}
+                                onEditChange={(field, value) => setEditingMedicineData({ ...editingMedicineData!, [field]: value })}
+                                onEditSave={(id) => updateMedicine(id, editingMedicineData!)}
+                                onDelete={deleteMedicine}
+                            />
+
+                            <AllergiesSection
+                                allergies={allergies}
+                                newAllergy={newAllergy}
+                                editingAllergy={editingAllergy}
+                                editingAllergyData={editingAllergyData}
+                                isAddingAllergy={isAddingAllergy}
+                                onNewAllergyChange={(field, value) => setNewAllergy({ ...newAllergy, [field]: value } as any)}
+                                onAddAllergy={addAllergy}
+                                onEditStart={(allergy) => {
+                                    setEditingAllergy(allergy.id);
+                                    setEditingAllergyData({
+                                        name: allergy.name,
+                                        reaction: allergy.reaction || '',
+                                        severity: allergy.severity || 'mild',
+                                        isMedicine: allergy.isMedicine || false,
+                                    });
+                                }}
+                                onEditCancel={() => {
+                                    setEditingAllergy(null);
+                                    setEditingAllergyData({ name: '', reaction: '', severity: 'mild', isMedicine: false });
+                                }}
+                                onEditChange={(field, value) => setEditingAllergyData({ ...editingAllergyData, [field]: value })}
+                                onEditSave={(id) => updateAllergy(id, editingAllergyData)}
+                                onDelete={deleteAllergy}
+                            />
+
+                            <EmergencyContactsSection
+                                contacts={contacts}
+                                newContact={newContact}
+                                editingContact={editingContact}
+                                editingContactData={editingContactData}
+                                isAddingContact={isAddingContact}
+                                onNewContactChange={(field, value) => setNewContact({ ...newContact, [field]: value })}
+                                onAddContact={addContact}
+                                onEditStart={(contact) => {
+                                    setEditingContact(contact.id);
+                                    setEditingContactData({
+                                        name: contact.name,
+                                        phone: contact.phone || '',
+                                        email: contact.email || '',
+                                        relation: contact.relation || '',
+                                    });
+                                }}
+                                onEditCancel={() => {
+                                    setEditingContact(null);
+                                    setEditingContactData(null);
+                                }}
+                                onEditChange={(field, value) => setEditingContactData({ ...editingContactData!, [field]: value })}
+                                onEditSave={(id) => updateContact(id, editingContactData!)}
+                                onDelete={deleteContact}
+                            />
+                        </>
+                    )}
                 </div>
             </div>
+
+            <DeleteModal
+                isOpen={deleteModal.isOpen}
+                type={deleteModal.type}
+                name={deleteModal.name}
+                isDeleting={deleteModal.isDeleting}
+                onClose={() => setDeleteModal({ isOpen: false, type: null, id: null, name: '', isDeleting: false })}
+                onConfirm={handleConfirmDelete}
+            />
         </main>
     );
 }

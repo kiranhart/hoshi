@@ -20,7 +20,23 @@ export const auth = betterAuth({
             prompt: "select_account", 
             clientId: env.GOOGLE_CLIENT_ID as string,
             clientSecret: env.GOOGLE_CLIENT_SECRET as string
-        }
+        },
+        ...(env.MICROSOFT_CLIENT_ID && env.MICROSOFT_CLIENT_SECRET
+            ? {
+                  microsoft: {
+                      clientId: env.MICROSOFT_CLIENT_ID,
+                      clientSecret: env.MICROSOFT_CLIENT_SECRET,
+                  },
+              }
+            : {}),
+        ...(env.APPLE_CLIENT_ID && env.APPLE_CLIENT_SECRET
+            ? {
+                  apple: {
+                      clientId: env.APPLE_CLIENT_ID,
+                      clientSecret: env.APPLE_CLIENT_SECRET,
+                  },
+              }
+            : {}),
     },
     plugins: [nextCookies()]
 })

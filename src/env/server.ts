@@ -9,6 +9,12 @@ export const env = createEnv({
         BETTER_AUTH_URL: z.string().url().optional(),
         GOOGLE_CLIENT_ID: z.string(),
         GOOGLE_CLIENT_SECRET: z.string(),
+        MICROSOFT_CLIENT_ID: z.string().optional(),
+        MICROSOFT_CLIENT_SECRET: z.string().optional(),
+        APPLE_CLIENT_ID: z.string().optional(),
+        APPLE_CLIENT_SECRET: z.string().optional(),
+        UPLOADTHING_SECRET: z.string().optional(),
+        UPLOADTHING_APP_ID: z.string().optional(),
     },
     emptyStringAsUndefined: true,
     // eslint-disable-next-line n/no-process-env

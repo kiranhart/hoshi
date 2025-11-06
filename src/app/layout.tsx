@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 
 import './globals.css';
+import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
-    title: 'Hoshi - Project Starter Kit',
-    description: 'Starter Kit',
+    title: 'Medi Link - Your Medical Information, One Link Away',
+    description: 'Share medications, allergies, emergency contacts, and more with a single link. Secure and private medical information sharing.',
 };
 
 export default function RootLayout({
@@ -14,13 +15,10 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <head>
-                <link
-                    rel="icon"
-                    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⭐</text></svg>"
-                />
-            </head>
-            <body>{children}</body>
+            <body>
+                {children}
+                <Toaster position="top-right" richColors />
+            </body>
         </html>
     );
 }
