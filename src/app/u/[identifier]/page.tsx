@@ -107,7 +107,7 @@ export default function PublicPage() {
                         animate={{ rotate: 360 }}
                         transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
                     >
-                        <div className="rounded-full bg-gradient-to-br from-teal-400 via-cyan-400 to-blue-500 p-3">
+                        <div className="rounded-full bg-gradient-to-br from-rose-400 via-pink-400 to-rose-500 p-3">
                             <Heart className="h-8 w-8 text-white" fill="white" />
                         </div>
                     </motion.div>
@@ -123,7 +123,7 @@ export default function PublicPage() {
                 {/* Animated Gradient Background */}
                 <div className="pointer-events-none absolute inset-0 overflow-hidden">
                     <motion.div
-                        className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-r from-teal-400/40 via-cyan-400/40 to-blue-500/40 blur-3xl"
+                        className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-r from-rose-400/40 via-pink-400/40 to-rose-500/40 blur-3xl"
                         animate={{
                             x: [0, 100, 0],
                             y: [0, 50, 0],
@@ -176,7 +176,7 @@ export default function PublicPage() {
                     <div className="flex justify-center gap-4">
                         <Link
                             href="/"
-                            className="cursor-pointer rounded-full bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-500 px-6 py-3 font-semibold text-white shadow-lg shadow-cyan-500/30 transition-all hover:scale-105 hover:shadow-xl hover:shadow-cyan-500/40"
+                            className="cursor-pointer rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 px-6 py-3 font-semibold text-white shadow-lg shadow-rose-500/30 transition-all hover:scale-105 hover:shadow-xl hover:shadow-rose-500/40"
                         >
                             Go Home
                         </Link>
@@ -194,7 +194,7 @@ export default function PublicPage() {
             {/* Animated Gradient Background */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
                 <motion.div
-                    className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-r from-teal-400/40 via-cyan-400/40 to-blue-500/40 blur-3xl"
+                    className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-r from-rose-400/40 via-pink-400/40 to-rose-500/40 blur-3xl"
                     animate={{
                         x: [0, 100, 0],
                         y: [0, 50, 0],
@@ -274,7 +274,7 @@ export default function PublicPage() {
                                 {page.userImage ? (
                                     <img src={page.userImage} alt={fullName} className="h-32 w-32 rounded-full border-4 border-white shadow-lg" />
                                 ) : (
-                                    <div className="flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-teal-400 via-cyan-400 to-blue-500 shadow-lg">
+                                    <div className="flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 via-pink-400 to-rose-500 shadow-lg">
                                         <User className="h-16 w-16 text-white" />
                                     </div>
                                 )}
@@ -282,7 +282,7 @@ export default function PublicPage() {
 
                             {/* Profile Info */}
                             <div className="flex-1">
-                                <h1 className="mb-2 bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-600 bg-clip-text text-4xl font-bold text-transparent">
+                                <h1 className="mb-2 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 bg-clip-text text-4xl font-bold text-transparent">
                                     {fullName}
                                 </h1>
                                 {page.description && <p className="mb-4 text-lg text-gray-600">{page.description}</p>}
@@ -317,7 +317,7 @@ export default function PublicPage() {
                             className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
                         >
                             <div className="mb-6 flex items-center gap-3">
-                                <div className="rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 p-3 shadow-md">
+                                <div className="rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 p-3 shadow-md">
                                     <Pill className="h-6 w-6 text-white" />
                                 </div>
                                 <h2 className="text-2xl font-bold text-gray-900">Current Medications</h2>
@@ -450,7 +450,7 @@ export default function PublicPage() {
                             className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
                         >
                             <div className="mb-6 flex items-center gap-3">
-                                <div className="rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 p-3 shadow-md">
+                                <div className="rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 p-3 shadow-md">
                                     <Stethoscope className="h-6 w-6 text-white" />
                                 </div>
                                 <h2 className="text-2xl font-bold text-gray-900">Diagnoses & Conditions</h2>
@@ -537,7 +537,7 @@ export default function PublicPage() {
                             className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
                         >
                             <div className="mb-6 flex items-center gap-3">
-                                <div className="rounded-xl bg-gradient-to-br from-purple-400 to-indigo-500 p-3 shadow-md">
+                                <div className="rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 p-3 shadow-md">
                                     <Heart className="h-6 w-6 text-white" fill="white" />
                                 </div>
                                 <h2 className="text-2xl font-bold text-gray-900">Emergency Contacts</h2>
@@ -587,7 +587,7 @@ export default function PublicPage() {
                             className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
                         >
                             <div className="mb-6 flex items-center gap-3">
-                                <div className="rounded-xl bg-gradient-to-br from-indigo-400 to-purple-500 p-3 shadow-md">
+                                <div className="rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 p-3 shadow-md">
                                     <QrCode className="h-6 w-6 text-white" />
                                 </div>
                                 <h2 className="text-2xl font-bold text-gray-900">Share This Page</h2>

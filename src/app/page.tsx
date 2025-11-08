@@ -22,7 +22,7 @@ export default function Home() {
             {/* Animated Gradient Background */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
                 <motion.div
-                    className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-r from-teal-400/40 via-cyan-400/40 to-blue-500/40 blur-3xl"
+                    className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-r from-rose-400/40 via-pink-400/40 to-rose-500/40 blur-3xl"
                     animate={{
                         x: [0, 100, 0],
                         y: [0, 50, 0],
@@ -35,7 +35,7 @@ export default function Home() {
                     }}
                 />
                 <motion.div
-                    className="absolute -right-40 -bottom-40 h-80 w-80 rounded-full bg-gradient-to-r from-pink-400/40 via-purple-400/40 to-indigo-500/40 blur-3xl"
+                    className="absolute -right-40 -bottom-40 h-80 w-80 rounded-full bg-gradient-to-r from-pink-500/40 via-rose-500/40 to-pink-600/40 blur-3xl"
                     animate={{
                         x: [0, -100, 0],
                         y: [0, -50, 0],
@@ -49,7 +49,7 @@ export default function Home() {
                     }}
                 />
                 <motion.div
-                    className="absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-emerald-400/30 via-teal-400/30 to-cyan-400/30 blur-3xl"
+                    className="absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-rose-400/30 via-pink-400/30 to-rose-500/30 blur-3xl"
                     animate={{
                         scale: [1, 1.3, 1],
                         opacity: [0.4, 0.6, 0.4],
@@ -65,10 +65,10 @@ export default function Home() {
             {/* Floating Medical Icons */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
                 {[
-                    { icon: Heart, x: '10%', y: '20%', delay: 0, color: 'text-pink-200' },
-                    { icon: Pill, x: '85%', y: '15%', delay: 0.3, color: 'text-cyan-200' },
-                    { icon: Stethoscope, x: '15%', y: '70%', delay: 0.6, color: 'text-emerald-200' },
-                    { icon: Activity, x: '90%', y: '75%', delay: 0.9, color: 'text-purple-200' },
+                    { icon: Heart, x: '10%', y: '20%', delay: 0, color: 'text-rose-200' },
+                    { icon: Pill, x: '85%', y: '15%', delay: 0.3, color: 'text-pink-200' },
+                    { icon: Stethoscope, x: '15%', y: '70%', delay: 0.6, color: 'text-rose-200' },
+                    { icon: Activity, x: '90%', y: '75%', delay: 0.9, color: 'text-pink-200' },
                 ].map((item, i) => (
                     <motion.div
                         key={i}
@@ -111,8 +111,8 @@ export default function Home() {
                     }}
                 >
                     <div className="relative">
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-500 opacity-50 blur-xl" />
-                        <div className="relative rounded-full bg-gradient-to-br from-teal-400 via-cyan-400 to-blue-500 p-4">
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-400 via-pink-400 to-rose-500 opacity-50 blur-xl" />
+                        <div className="relative rounded-full bg-gradient-to-br from-rose-400 via-pink-400 to-rose-500 p-4">
                             <Heart className="h-12 w-12 text-white md:h-16 md:w-16" fill="white" />
                         </div>
                     </div>
@@ -120,7 +120,7 @@ export default function Home() {
 
                 {/* Title */}
                 <motion.h1
-                    className="mb-4 bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-600 bg-clip-text text-6xl font-extrabold text-transparent md:text-7xl lg:text-8xl"
+                    className="mb-4 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 bg-clip-text text-6xl font-extrabold text-transparent md:text-7xl lg:text-8xl"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
@@ -153,12 +153,12 @@ export default function Home() {
                             placeholder="Search for a username..."
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="w-full rounded-full border-2 border-gray-200 bg-white px-12 py-4 text-gray-900 placeholder-gray-400 shadow-sm transition-all focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
+                            className="w-full rounded-full border-2 border-gray-200 bg-white px-12 py-4 text-gray-900 placeholder-gray-400 shadow-sm transition-all focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                         />
                     </div>
                     <button
                         type="submit"
-                        className="cursor-pointer rounded-full bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-500 px-8 py-4 font-semibold text-white shadow-lg shadow-cyan-500/30 transition-all hover:scale-105 hover:shadow-xl hover:shadow-cyan-500/40 active:scale-95"
+                        className="cursor-pointer rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 px-8 py-4 font-semibold text-white shadow-lg shadow-rose-500/30 transition-all hover:scale-105 hover:shadow-xl hover:shadow-rose-500/40 active:scale-95"
                     >
                         Search
                     </button>
@@ -172,7 +172,7 @@ export default function Home() {
                     transition={{ duration: 0.8, delay: 0.8 }}
                 >
                     <Link href="/sign-in">
-                        <button className="group flex cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 px-8 py-4 font-semibold text-white shadow-lg shadow-purple-500/30 transition-all hover:scale-105 hover:shadow-xl hover:shadow-purple-500/40 active:scale-95">
+                        <button className="group flex cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 px-8 py-4 font-semibold text-white shadow-lg shadow-rose-500/30 transition-all hover:scale-105 hover:shadow-xl hover:shadow-rose-500/40 active:scale-95">
                             <UserPlus className="h-5 w-5" />
                             Get Started
                         </button>
@@ -193,32 +193,32 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="relative z-10 mt-32 grid max-w-6xl gap-8 px-6 sm:grid-cols-2 lg:grid-cols-4"
             >
-                {[
-                    {
-                        icon: Pill,
-                        title: 'Medications',
-                        desc: 'Track and share your current medications with healthcare providers',
-                        gradient: 'from-cyan-400 to-blue-500',
-                    },
-                    {
-                        icon: Activity,
-                        title: 'Allergies',
-                        desc: 'Keep your allergies visible for quick access in emergencies',
-                        gradient: 'from-pink-400 to-rose-500',
-                    },
-                    {
-                        icon: Heart,
-                        title: 'Emergency Contacts',
-                        desc: 'Store important contacts for medical emergencies',
-                        gradient: 'from-purple-400 to-indigo-500',
-                    },
-                    {
-                        icon: Shield,
-                        title: 'Secure & Private',
-                        desc: 'Your medical data is encrypted and secure',
-                        gradient: 'from-emerald-400 to-teal-500',
-                    },
-                ].map((feature, i) => (
+                    {[
+                        {
+                            icon: Pill,
+                            title: 'Medications',
+                            desc: 'Track and share your current medications with healthcare providers',
+                            gradient: 'from-rose-400 to-pink-500',
+                        },
+                        {
+                            icon: Activity,
+                            title: 'Allergies',
+                            desc: 'Keep your allergies visible for quick access in emergencies',
+                            gradient: 'from-pink-500 to-rose-500',
+                        },
+                        {
+                            icon: Heart,
+                            title: 'Emergency Contacts',
+                            desc: 'Store important contacts for medical emergencies',
+                            gradient: 'from-rose-500 to-pink-600',
+                        },
+                        {
+                            icon: Shield,
+                            title: 'Secure & Private',
+                            desc: 'Your medical data is encrypted and secure',
+                            gradient: 'from-pink-400 to-rose-500',
+                        },
+                    ].map((feature, i) => (
                     <motion.div
                         key={i}
                         initial={{ opacity: 0, y: 30 }}

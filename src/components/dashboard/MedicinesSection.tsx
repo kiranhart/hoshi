@@ -161,7 +161,7 @@ export function MedicinesSection({
             className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
         >
             <div className="mb-6 flex items-center gap-3">
-                <div className="rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 p-2 shadow-md">
+                <div className="rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 p-2 shadow-md">
                     <Pill className="h-5 w-5 text-white" />
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-900">Medicines</h3>
@@ -261,7 +261,7 @@ export function MedicinesSection({
                     <Button
                         onClick={onAddMedicine}
                         disabled={isAddingMedicine}
-                        className="cursor-pointer bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30 hover:from-teal-600 hover:via-cyan-600 hover:to-blue-600 hover:shadow-xl hover:shadow-cyan-500/40 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="cursor-pointer bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 text-white shadow-lg shadow-rose-500/30 hover:from-rose-600 hover:via-pink-600 hover:to-rose-600 hover:shadow-xl hover:shadow-rose-500/40 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {isAddingMedicine ? (
                             <>

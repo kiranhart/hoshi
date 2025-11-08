@@ -49,11 +49,11 @@ export function DashboardHeader({ userName, userEmail, userImage, onSignOut, sub
             case 'free':
                 return { name: 'Free', icon: Star, color: 'text-gray-500' };
             case 'basic':
-                return { name: 'Basic', icon: Zap, color: 'text-teal-500' };
+                return { name: 'Basic', icon: Zap, color: 'text-rose-500' };
             case 'pro':
-                return { name: 'Pro', icon: Sparkles, color: 'text-cyan-500' };
+                return { name: 'Pro', icon: Sparkles, color: 'text-pink-500' };
             case 'premium':
-                return { name: 'Premium', icon: Sparkles, color: 'text-blue-500' };
+                return { name: 'Premium', icon: Sparkles, color: 'text-rose-600' };
             default:
                 return { name: 'Free', icon: Star, color: 'text-gray-500' };
         }
@@ -78,13 +78,13 @@ export function DashboardHeader({ userName, userEmail, userImage, onSignOut, sub
                         }}
                     >
                         <div className="relative">
-                            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-500 opacity-50 blur-xl" />
-                            <div className="relative rounded-full bg-gradient-to-br from-teal-400 via-cyan-400 to-blue-500 p-2">
+                            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-400 via-pink-400 to-rose-500 opacity-50 blur-xl" />
+                            <div className="relative rounded-full bg-gradient-to-br from-rose-400 via-pink-400 to-rose-500 p-2">
                                 <Heart className="h-5 w-5 text-white" fill="white" />
                             </div>
                         </div>
                     </motion.div>
-                    <h1 className="bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-600 bg-clip-text text-2xl font-bold text-transparent">
+                    <h1 className="bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 bg-clip-text text-2xl font-bold text-transparent">
                         Medi Link
                     </h1>
                 </motion.div>
@@ -109,7 +109,7 @@ export function DashboardHeader({ userName, userEmail, userImage, onSignOut, sub
                                         }}
                                     />
                                 ) : (
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-200 bg-gradient-to-br from-teal-400 to-blue-500">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-200 bg-gradient-to-br from-rose-400 to-pink-500">
                                         <span className="text-xs font-semibold text-white">{userName?.charAt(0)?.toUpperCase() || 'U'}</span>
                                     </div>
                                 )}

@@ -88,7 +88,7 @@ export function QRCodeSection({ uniqueKey, pageUrl }: QRCodeSectionProps) {
             className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
         >
             <div className="mb-6 flex items-center gap-3">
-                <div className="rounded-xl bg-gradient-to-br from-indigo-400 to-purple-500 p-3 shadow-md">
+                <div className="rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 p-3 shadow-md">
                     <QrCode className="h-6 w-6 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">Share Your Medical Information</h2>
@@ -135,14 +135,14 @@ export function QRCodeSection({ uniqueKey, pageUrl }: QRCodeSectionProps) {
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <Button
                             onClick={handlePreview}
-                            className="w-full cursor-pointer bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-md hover:from-cyan-600 hover:to-blue-600"
+                            className="w-full cursor-pointer bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-md hover:from-rose-600 hover:to-pink-600"
                         >
                             <Eye className="mr-2 h-4 w-4" />
                             Preview Page
                         </Button>
                         <Button
                             onClick={handleShare}
-                            className="w-full cursor-pointer bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md hover:from-purple-600 hover:to-pink-600"
+                            className="w-full cursor-pointer bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md hover:from-pink-600 hover:to-rose-600"
                         >
                             <Share2 className="mr-2 h-4 w-4" />
                             Share Link

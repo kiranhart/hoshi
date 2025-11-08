@@ -42,7 +42,7 @@ export function EmergencyContactsSection({
             className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
         >
             <div className="mb-6 flex items-center gap-3">
-                <div className="rounded-xl bg-gradient-to-br from-purple-400 to-indigo-500 p-2 shadow-md">
+                <div className="rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 p-2 shadow-md">
                     <Phone className="h-5 w-5 text-white" />
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-900">Emergency Contacts</h3>
@@ -55,33 +55,33 @@ export function EmergencyContactsSection({
                     value={newContact.name}
                     onChange={(e) => onNewContactChange('name', e.target.value)}
                     placeholder="Contact name"
-                    className="rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
+                    className="rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                 />
                 <input
                     type="text"
                     value={newContact.relation}
                     onChange={(e) => onNewContactChange('relation', e.target.value)}
                     placeholder="Relation (optional)"
-                    className="rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
+                    className="rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                 />
                 <input
                     type="tel"
                     value={newContact.phone}
                     onChange={(e) => onNewContactChange('phone', e.target.value)}
                     placeholder="Phone"
-                    className="rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
+                    className="rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                 />
                 <input
                     type="email"
                     value={newContact.email}
                     onChange={(e) => onNewContactChange('email', e.target.value)}
                     placeholder="Email"
-                    className="rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
+                    className="rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                 />
                 <Button
                     onClick={onAddContact}
                     disabled={isAddingContact}
-                    className="cursor-pointer bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30 hover:from-teal-600 hover:via-cyan-600 hover:to-blue-600 hover:shadow-xl hover:shadow-cyan-500/40 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="cursor-pointer bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 text-white shadow-lg shadow-rose-500/30 hover:from-rose-600 hover:via-pink-600 hover:to-rose-600 hover:shadow-xl hover:shadow-rose-500/40 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {isAddingContact ? (
                         <>
@@ -110,14 +110,14 @@ export function EmergencyContactsSection({
                                         type="text"
                                         value={editingContactData?.name || ''}
                                         onChange={(e) => onEditChange('name', e.target.value)}
-                                        className="flex-1 rounded-lg border-2 border-gray-200 bg-white px-3 py-2 text-gray-900 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
+                                        className="flex-1 rounded-lg border-2 border-gray-200 bg-white px-3 py-2 text-gray-900 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                                         placeholder="Contact name"
                                     />
                                     <input
                                         type="text"
                                         value={editingContactData?.relation || ''}
                                         onChange={(e) => onEditChange('relation', e.target.value)}
-                                        className="flex-1 rounded-lg border-2 border-gray-200 bg-white px-3 py-2 text-gray-900 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
+                                        className="flex-1 rounded-lg border-2 border-gray-200 bg-white px-3 py-2 text-gray-900 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                                         placeholder="Relation (optional)"
                                     />
                                     <input
@@ -125,14 +125,14 @@ export function EmergencyContactsSection({
                                         value={editingContactData?.phone || ''}
                                         onChange={(e) => onEditChange('phone', e.target.value)}
                                         placeholder="Phone"
-                                        className="flex-1 rounded-lg border-2 border-gray-200 bg-white px-3 py-2 text-gray-900 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
+                                        className="flex-1 rounded-lg border-2 border-gray-200 bg-white px-3 py-2 text-gray-900 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                                     />
                                     <input
                                         type="email"
                                         value={editingContactData?.email || ''}
                                         onChange={(e) => onEditChange('email', e.target.value)}
                                         placeholder="Email"
-                                        className="flex-1 rounded-lg border-2 border-gray-200 bg-white px-3 py-2 text-gray-900 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
+                                        className="flex-1 rounded-lg border-2 border-gray-200 bg-white px-3 py-2 text-gray-900 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                                     />
                                     <Button
                                         onClick={() => onEditSave(contact.id)}

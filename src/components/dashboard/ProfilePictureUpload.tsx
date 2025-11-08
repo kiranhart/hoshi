@@ -215,7 +215,7 @@ export function ProfilePictureUpload({ currentImageUrl, onImageUpdate }: Profile
                     {displayImage ? (
                         <img src={displayImage} alt="Profile" className="h-full w-full object-cover" />
                     ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-teal-400 via-cyan-400 to-blue-500">
+                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-rose-400 via-pink-400 to-rose-500">
                             <span className="text-3xl font-semibold text-white">{session?.user?.name?.charAt(0)?.toUpperCase() || 'U'}</span>
                         </div>
                     )}

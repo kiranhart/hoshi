@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Pill, AlertTriangle, Stethoscope, X, Loader2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+
+import { AnimatePresence, motion } from 'framer-motion';
+import { AlertTriangle, Loader2, Pill, Search, Stethoscope, X } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
-import { COMMON_MEDICINES, COMMON_ALLERGIES, COMMON_DIAGNOSES } from '@/lib/medical-data';
+import { COMMON_ALLERGIES, COMMON_DIAGNOSES, COMMON_MEDICINES } from '@/lib/medical-data';
 
 type ItemType = 'medicine' | 'allergy' | 'diagnosis' | null;
 
@@ -25,14 +27,7 @@ const SEVERITY_OPTIONS = [
     { value: 'critical', label: 'Critical' },
 ];
 
-export function CommandPalette({
-    isOpen,
-    onClose,
-    onAddMedicine,
-    onAddAllergy,
-    onAddDiagnosis,
-    isAdding,
-}: CommandPaletteProps) {
+export function CommandPalette({ isOpen, onClose, onAddMedicine, onAddAllergy, onAddDiagnosis, isAdding }: CommandPaletteProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedType, setSelectedType] = useState<ItemType>(null);
     const [selectedItem, setSelectedItem] = useState<string>('');
@@ -45,15 +40,9 @@ export function CommandPalette({
     const [diagnosisForm, setDiagnosisForm] = useState({ name: '', severity: '', diagnosisDate: '', description: '' });
 
     // Filter suggestions based on search query
-    const filteredMedicines = COMMON_MEDICINES.filter((m) =>
-        m.toLowerCase().includes(searchQuery.toLowerCase())
-    ).slice(0, 5);
-    const filteredAllergies = COMMON_ALLERGIES.filter((a) =>
-        a.toLowerCase().includes(searchQuery.toLowerCase())
-    ).slice(0, 5);
-    const filteredDiagnoses = COMMON_DIAGNOSES.filter((d) =>
-        d.toLowerCase().includes(searchQuery.toLowerCase())
-    ).slice(0, 5);
+    const filteredMedicines = COMMON_MEDICINES.filter((m) => m.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5);
+    const filteredAllergies = COMMON_ALLERGIES.filter((a) => a.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5);
+    const filteredDiagnoses = COMMON_DIAGNOSES.filter((d) => d.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5);
 
     // Reset form when dialog closes
     useEffect(() => {
@@ -160,7 +149,7 @@ export function CommandPalette({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="cursor-pointer fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+                        className="fixed inset-0 z-50 cursor-pointer bg-black/50 backdrop-blur-sm"
                     />
 
                     {/* Dialog */}
@@ -168,13 +157,13 @@ export function CommandPalette({
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="fixed left-1/2 top-1/2 z-50 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-gray-200 bg-white shadow-2xl"
+                        className="fixed top-1/2 left-1/2 z-50 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-gray-200 bg-white shadow-2xl"
                     >
-                        <div className="flex flex-col max-h-[80vh]">
+                        <div className="flex max-h-[80vh] flex-col">
                             {/* Header */}
                             <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="rounded-lg bg-gradient-to-br from-indigo-400 to-purple-500 p-2">
+                                    <div className="rounded-lg bg-gradient-to-br from-rose-400 to-pink-500 p-2">
                                         <Search className="h-5 w-5 text-white" />
                                     </div>
                                     <h2 className="text-xl font-bold text-gray-900">Quick Add</h2>
@@ -196,10 +185,10 @@ export function CommandPalette({
                                         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                                             <button
                                                 onClick={() => handleTypeSelect('medicine')}
-                                                className="cursor-pointer flex items-center gap-3 rounded-lg border-2 border-gray-200 bg-white p-4 text-left transition-all hover:border-indigo-300 hover:bg-indigo-50 hover:shadow-md"
+                                                className="flex cursor-pointer items-center gap-3 rounded-lg border-2 border-gray-200 bg-white p-4 text-left transition-all hover:border-rose-300 hover:bg-rose-50 hover:shadow-md"
                                             >
-                                                <div className="rounded-lg bg-indigo-100 p-2">
-                                                    <Pill className="h-5 w-5 text-indigo-600" />
+                                                <div className="rounded-lg bg-rose-100 p-2">
+                                                    <Pill className="h-5 w-5 text-rose-600" />
                                                 </div>
                                                 <div>
                                                     <div className="font-semibold text-gray-900">Medicine</div>
@@ -208,7 +197,7 @@ export function CommandPalette({
                                             </button>
                                             <button
                                                 onClick={() => handleTypeSelect('allergy')}
-                                                className="cursor-pointer flex items-center gap-3 rounded-lg border-2 border-gray-200 bg-white p-4 text-left transition-all hover:border-red-300 hover:bg-red-50 hover:shadow-md"
+                                                className="flex cursor-pointer items-center gap-3 rounded-lg border-2 border-gray-200 bg-white p-4 text-left transition-all hover:border-red-300 hover:bg-red-50 hover:shadow-md"
                                             >
                                                 <div className="rounded-lg bg-red-100 p-2">
                                                     <AlertTriangle className="h-5 w-5 text-red-600" />
@@ -220,10 +209,10 @@ export function CommandPalette({
                                             </button>
                                             <button
                                                 onClick={() => handleTypeSelect('diagnosis')}
-                                                className="cursor-pointer flex items-center gap-3 rounded-lg border-2 border-gray-200 bg-white p-4 text-left transition-all hover:border-blue-300 hover:bg-blue-50 hover:shadow-md"
+                                                className="flex cursor-pointer items-center gap-3 rounded-lg border-2 border-gray-200 bg-white p-4 text-left transition-all hover:border-rose-300 hover:bg-rose-50 hover:shadow-md"
                                             >
-                                                <div className="rounded-lg bg-blue-100 p-2">
-                                                    <Stethoscope className="h-5 w-5 text-blue-600" />
+                                                <div className="rounded-lg bg-rose-100 p-2">
+                                                    <Stethoscope className="h-5 w-5 text-rose-600" />
                                                 </div>
                                                 <div>
                                                     <div className="font-semibold text-gray-900">Diagnosis</div>
@@ -238,7 +227,7 @@ export function CommandPalette({
                                         {/* Back button */}
                                         <button
                                             onClick={() => setSelectedType(null)}
-                                            className="cursor-pointer flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+                                            className="flex cursor-pointer items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
                                         >
                                             <X className="h-4 w-4" />
                                             Back to selection
@@ -252,7 +241,7 @@ export function CommandPalette({
                                                 {selectedType === 'diagnosis' && 'Search or Type Diagnosis/Condition Name'}
                                             </label>
                                             <div className="relative">
-                                                <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                                                <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
                                                 <input
                                                     ref={searchInputRef}
                                                     type="text"
@@ -283,7 +272,7 @@ export function CommandPalette({
                                                               ? 'Type to search allergies or enter name...'
                                                               : 'Type to search diagnoses or enter name...'
                                                     }
-                                                    className="w-full rounded-lg border-2 border-gray-200 bg-white px-10 py-3 text-gray-900 placeholder:text-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 focus:outline-none"
+                                                    className="w-full rounded-lg border-2 border-gray-200 bg-white px-10 py-3 text-gray-900 placeholder:text-gray-400 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                                                 />
                                             </div>
 
@@ -294,7 +283,7 @@ export function CommandPalette({
                                                         <button
                                                             key={idx}
                                                             onClick={() => handleItemSelect(item)}
-                                                            className="cursor-pointer w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg"
+                                                            className="w-full cursor-pointer px-4 py-2 text-left text-sm text-gray-700 first:rounded-t-lg last:rounded-b-lg hover:bg-gray-50"
                                                         >
                                                             {item}
                                                         </button>
@@ -307,31 +296,23 @@ export function CommandPalette({
                                         {selectedType === 'medicine' && (
                                             <div className="space-y-4">
                                                 <div>
-                                                    <label className="mb-2 block text-sm font-medium text-gray-700">
-                                                        Dosage
-                                                    </label>
+                                                    <label className="mb-2 block text-sm font-medium text-gray-700">Dosage</label>
                                                     <input
                                                         type="text"
                                                         value={medicineForm.dosage}
-                                                        onChange={(e) =>
-                                                            setMedicineForm({ ...medicineForm, dosage: e.target.value })
-                                                        }
+                                                        onChange={(e) => setMedicineForm({ ...medicineForm, dosage: e.target.value })}
                                                         placeholder="e.g., 100mg"
-                                                        className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 focus:outline-none"
+                                                        className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="mb-2 block text-sm font-medium text-gray-700">
-                                                        Frequency
-                                                    </label>
+                                                    <label className="mb-2 block text-sm font-medium text-gray-700">Frequency</label>
                                                     <input
                                                         type="text"
                                                         value={medicineForm.frequency}
-                                                        onChange={(e) =>
-                                                            setMedicineForm({ ...medicineForm, frequency: e.target.value })
-                                                        }
+                                                        onChange={(e) => setMedicineForm({ ...medicineForm, frequency: e.target.value })}
                                                         placeholder="e.g., Twice daily"
-                                                        className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 focus:outline-none"
+                                                        className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                                                     />
                                                 </div>
                                             </div>
@@ -341,29 +322,21 @@ export function CommandPalette({
                                         {selectedType === 'allergy' && (
                                             <div className="space-y-4">
                                                 <div>
-                                                    <label className="mb-2 block text-sm font-medium text-gray-700">
-                                                        Reaction
-                                                    </label>
+                                                    <label className="mb-2 block text-sm font-medium text-gray-700">Reaction</label>
                                                     <input
                                                         type="text"
                                                         value={allergyForm.reaction}
-                                                        onChange={(e) =>
-                                                            setAllergyForm({ ...allergyForm, reaction: e.target.value })
-                                                        }
+                                                        onChange={(e) => setAllergyForm({ ...allergyForm, reaction: e.target.value })}
                                                         placeholder="e.g., Rash, hives"
-                                                        className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 focus:outline-none"
+                                                        className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="mb-2 block text-sm font-medium text-gray-700">
-                                                        Severity
-                                                    </label>
+                                                    <label className="mb-2 block text-sm font-medium text-gray-700">Severity</label>
                                                     <select
                                                         value={allergyForm.severity}
-                                                        onChange={(e) =>
-                                                            setAllergyForm({ ...allergyForm, severity: e.target.value })
-                                                        }
-                                                        className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 focus:outline-none"
+                                                        onChange={(e) => setAllergyForm({ ...allergyForm, severity: e.target.value })}
+                                                        className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                                                     >
                                                         {SEVERITY_OPTIONS.map((opt) => (
                                                             <option key={opt.value} value={opt.value}>
@@ -377,10 +350,8 @@ export function CommandPalette({
                                                         type="checkbox"
                                                         id="isMedicine"
                                                         checked={allergyForm.isMedicine}
-                                                        onChange={(e) =>
-                                                            setAllergyForm({ ...allergyForm, isMedicine: e.target.checked })
-                                                        }
-                                                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                                        onChange={(e) => setAllergyForm({ ...allergyForm, isMedicine: e.target.checked })}
+                                                        className="h-4 w-4 rounded border-gray-300 text-rose-600 focus:ring-indigo-500"
                                                     />
                                                     <label htmlFor="isMedicine" className="text-sm font-medium text-gray-700">
                                                         This is a medicine allergy
@@ -393,15 +364,11 @@ export function CommandPalette({
                                         {selectedType === 'diagnosis' && (
                                             <div className="space-y-4">
                                                 <div>
-                                                    <label className="mb-2 block text-sm font-medium text-gray-700">
-                                                        Severity
-                                                    </label>
+                                                    <label className="mb-2 block text-sm font-medium text-gray-700">Severity</label>
                                                     <select
                                                         value={diagnosisForm.severity}
-                                                        onChange={(e) =>
-                                                            setDiagnosisForm({ ...diagnosisForm, severity: e.target.value })
-                                                        }
-                                                        className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 focus:outline-none"
+                                                        onChange={(e) => setDiagnosisForm({ ...diagnosisForm, severity: e.target.value })}
+                                                        className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                                                     >
                                                         <option value="">Not specified</option>
                                                         {SEVERITY_OPTIONS.map((opt) => (
@@ -412,30 +379,22 @@ export function CommandPalette({
                                                     </select>
                                                 </div>
                                                 <div>
-                                                    <label className="mb-2 block text-sm font-medium text-gray-700">
-                                                        Diagnosis Date
-                                                    </label>
+                                                    <label className="mb-2 block text-sm font-medium text-gray-700">Diagnosis Date</label>
                                                     <input
                                                         type="date"
                                                         value={diagnosisForm.diagnosisDate}
-                                                        onChange={(e) =>
-                                                            setDiagnosisForm({ ...diagnosisForm, diagnosisDate: e.target.value })
-                                                        }
-                                                        className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 focus:outline-none"
+                                                        onChange={(e) => setDiagnosisForm({ ...diagnosisForm, diagnosisDate: e.target.value })}
+                                                        className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="mb-2 block text-sm font-medium text-gray-700">
-                                                        Description
-                                                    </label>
+                                                    <label className="mb-2 block text-sm font-medium text-gray-700">Description</label>
                                                     <textarea
                                                         value={diagnosisForm.description}
-                                                        onChange={(e) =>
-                                                            setDiagnosisForm({ ...diagnosisForm, description: e.target.value })
-                                                        }
+                                                        onChange={(e) => setDiagnosisForm({ ...diagnosisForm, description: e.target.value })}
                                                         placeholder="Additional notes about this diagnosis..."
                                                         rows={3}
-                                                        className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 focus:outline-none"
+                                                        className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
                                                     />
                                                 </div>
                                             </div>
@@ -447,18 +406,13 @@ export function CommandPalette({
                             {/* Footer */}
                             {selectedType && (
                                 <div className="flex items-center justify-end gap-3 border-t border-gray-200 px-6 py-4">
-                                    <Button
-                                        variant="outline"
-                                        onClick={onClose}
-                                        disabled={isAdding}
-                                        className="cursor-pointer"
-                                    >
+                                    <Button variant="outline" onClick={onClose} disabled={isAdding} className="cursor-pointer">
                                         Cancel
                                     </Button>
                                     <Button
                                         onClick={handleSubmit}
                                         disabled={!canSubmit() || isAdding}
-                                        className="cursor-pointer bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 disabled:opacity-50"
+                                        className="cursor-pointer bg-gradient-to-r from-rose-500 to-pink-500 text-white hover:from-rose-600 hover:to-pink-600 disabled:opacity-50"
                                     >
                                         {isAdding ? (
                                             <>
@@ -478,4 +432,3 @@ export function CommandPalette({
         </AnimatePresence>
     );
 }
-

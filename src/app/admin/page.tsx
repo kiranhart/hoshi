@@ -174,7 +174,7 @@ export default function AdminDashboardPage() {
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
           >
-            <div className="rounded-full bg-gradient-to-br from-teal-400 via-cyan-400 to-blue-500 p-3">
+            <div className="rounded-full bg-gradient-to-br from-rose-400 via-pink-400 to-rose-500 p-3">
               <Heart className="h-8 w-8 text-white" fill="white" />
             </div>
           </motion.div>
@@ -198,7 +198,7 @@ export default function AdminDashboardPage() {
       {/* Animated Gradient Background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <motion.div
-          className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-r from-purple-400/40 via-indigo-400/40 to-blue-500/40 blur-3xl"
+          className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-r from-rose-400/40 via-pink-400/40 to-rose-500/40 blur-3xl"
           animate={{
             x: [0, 100, 0],
             y: [0, 50, 0],
@@ -232,10 +232,10 @@ export default function AdminDashboardPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <div className="rounded-full bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-600 p-2">
+                <div className="rounded-full bg-gradient-to-br from-rose-500 via-pink-500 to-rose-600 p-2">
                   <Shield className="h-6 w-6 text-white" />
                 </div>
-                <h1 className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-2xl font-bold text-transparent">
+                <h1 className="bg-gradient-to-r from-rose-600 via-pink-600 to-rose-600 bg-clip-text text-2xl font-bold text-transparent">
                   Admin Dashboard
                 </h1>
               </div>

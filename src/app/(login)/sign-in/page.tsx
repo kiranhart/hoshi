@@ -20,7 +20,7 @@ export default function SignInPage() {
             {/* Animated Gradient Background */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
                 <motion.div
-                    className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-r from-teal-400/40 via-cyan-400/40 to-blue-500/40 blur-3xl"
+                    className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-r from-rose-400/40 via-pink-400/40 to-rose-500/40 blur-3xl"
                     animate={{
                         x: [0, 100, 0],
                         y: [0, 50, 0],
@@ -33,7 +33,7 @@ export default function SignInPage() {
                     }}
                 />
                 <motion.div
-                    className="absolute -right-40 -bottom-40 h-80 w-80 rounded-full bg-gradient-to-r from-pink-400/40 via-purple-400/40 to-indigo-500/40 blur-3xl"
+                    className="absolute -right-40 -bottom-40 h-80 w-80 rounded-full bg-gradient-to-r from-pink-500/40 via-rose-500/40 to-pink-600/40 blur-3xl"
                     animate={{
                         x: [0, -100, 0],
                         y: [0, -50, 0],
@@ -47,7 +47,7 @@ export default function SignInPage() {
                     }}
                 />
                 <motion.div
-                    className="absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-emerald-400/30 via-teal-400/30 to-cyan-400/30 blur-3xl"
+                    className="absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-rose-400/30 via-pink-400/30 to-rose-500/30 blur-3xl"
                     animate={{
                         scale: [1, 1.3, 1],
                         opacity: [0.4, 0.6, 0.4],
@@ -63,10 +63,10 @@ export default function SignInPage() {
             {/* Floating Medical Icons */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
                 {[
-                    { icon: Heart, x: '10%', y: '20%', delay: 0, color: 'text-pink-200' },
-                    { icon: Pill, x: '85%', y: '15%', delay: 0.3, color: 'text-cyan-200' },
-                    { icon: Stethoscope, x: '15%', y: '70%', delay: 0.6, color: 'text-emerald-200' },
-                    { icon: Activity, x: '90%', y: '75%', delay: 0.9, color: 'text-purple-200' },
+                    { icon: Heart, x: '10%', y: '20%', delay: 0, color: 'text-rose-200' },
+                    { icon: Pill, x: '85%', y: '15%', delay: 0.3, color: 'text-pink-200' },
+                    { icon: Stethoscope, x: '15%', y: '70%', delay: 0.6, color: 'text-rose-200' },
+                    { icon: Activity, x: '90%', y: '75%', delay: 0.9, color: 'text-pink-200' },
                 ].map((item, i) => (
                     <motion.div
                         key={i}
@@ -109,15 +109,15 @@ export default function SignInPage() {
                         }}
                     >
                         <div className="relative">
-                            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-500 opacity-50 blur-xl" />
-                            <div className="relative rounded-full bg-gradient-to-br from-teal-400 via-cyan-400 to-blue-500 p-3">
+                            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-400 via-pink-400 to-rose-500 opacity-50 blur-xl" />
+                            <div className="relative rounded-full bg-gradient-to-br from-rose-400 via-pink-400 to-rose-500 p-3">
                                 <Heart className="h-8 w-8 text-white" fill="white" />
                             </div>
                         </div>
                     </motion.div>
 
                     {/* Title */}
-                    <h1 className="mb-2 bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-600 bg-clip-text text-center text-3xl font-extrabold text-transparent">
+                    <h1 className="mb-2 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 bg-clip-text text-center text-3xl font-extrabold text-transparent">
                         Welcome to Medi Link
                     </h1>
                     <p className="mb-8 text-center text-gray-600">Sign in or create an account to get started</p>

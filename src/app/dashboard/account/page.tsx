@@ -115,7 +115,7 @@ export default function AccountSettingsPage() {
                 </Button>
 
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-                    <h1 className="bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-600 bg-clip-text text-4xl font-bold text-transparent">
+                    <h1 className="bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 bg-clip-text text-4xl font-bold text-transparent">
                         Account Settings
                     </h1>
                     <p className="mt-2 text-gray-600">Manage your profile, subscription, and billing information</p>
@@ -128,7 +128,7 @@ export default function AccountSettingsPage() {
                         <Card className="border-gray-200 shadow-sm">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <div className="rounded-full bg-gradient-to-br from-teal-400 to-blue-500 p-2">
+                                    <div className="rounded-full bg-gradient-to-br from-rose-400 to-pink-500 p-2">
                                         <Star className="h-4 w-4 text-white" />
                                     </div>
                                     Profile Picture
@@ -144,7 +144,7 @@ export default function AccountSettingsPage() {
                         <Card className="border-gray-200 shadow-sm">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <div className="rounded-full bg-gradient-to-br from-teal-400 to-blue-500 p-2">
+                                    <div className="rounded-full bg-gradient-to-br from-rose-400 to-pink-500 p-2">
                                         <MapPin className="h-4 w-4 text-white" />
                                     </div>
                                     Shipping Address
@@ -166,7 +166,7 @@ export default function AccountSettingsPage() {
                         <Card className="border-gray-200 shadow-sm">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <div className="rounded-full bg-gradient-to-br from-teal-400 to-blue-500 p-2">
+                                    <div className="rounded-full bg-gradient-to-br from-rose-400 to-pink-500 p-2">
                                         <CreditCard className="h-4 w-4 text-white" />
                                     </div>
                                     Billing Information
@@ -206,13 +206,13 @@ export default function AccountSettingsPage() {
                                             whileHover={{ scale: 1.02 }}
                                             className={`relative rounded-lg border-2 p-4 transition-all ${
                                                 tier.popular
-                                                    ? 'border-cyan-400 bg-gradient-to-br from-cyan-50 to-blue-50 shadow-md'
+                                                    ? 'border-rose-400 bg-gradient-to-br from-rose-50 to-pink-50 shadow-md'
                                                     : 'border-gray-200 bg-white'
-                                            } ${isCurrentTier ? 'ring-2 ring-cyan-500' : ''}`}
+                                            } ${isCurrentTier ? 'ring-2 ring-rose-500' : ''}`}
                                         >
                                             {tier.popular && (
                                                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                                                    <span className="rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 px-3 py-1 text-xs font-semibold text-white">
+                                                    <span className="rounded-full bg-gradient-to-r from-rose-400 to-pink-500 px-3 py-1 text-xs font-semibold text-white">
                                                         Most Popular
                                                     </span>
                                                 </div>
@@ -250,7 +250,7 @@ export default function AccountSettingsPage() {
                                                 variant={tier.popular ? 'default' : 'outline'}
                                                 className={`w-full ${
                                                     tier.popular
-                                                        ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600'
+                                                        ? 'bg-gradient-to-r from-rose-500 to-pink-500 text-white hover:from-rose-600 hover:to-pink-600'
                                                         : ''
                                                 }`}
                                             >

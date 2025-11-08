@@ -19,18 +19,18 @@ export default function NotFound() {
                 transition={{ duration: 1, ease: 'easeOut' }}
                 className="z-10 mb-6 flex justify-center"
             >
-                <StarOff className="h-16 w-16 text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]" />
+                <StarOff className="h-16 w-16 text-rose-400 drop-shadow-[0_0_15px_rgba(251,113,133,0.5)]" />
             </motion.div>
 
             {/* 404 Text */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.8 }} className="z-10 text-center">
-                <h1 className="mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-6xl font-bold text-transparent">404</h1>
+                <h1 className="mb-4 bg-gradient-to-r from-rose-400 via-pink-400 to-rose-500 bg-clip-text text-6xl font-bold text-transparent">404</h1>
                 <p className="mb-8 max-w-md text-lg text-gray-400">
                     Looks like this star drifted off into the void. The page you’re looking for doesn’t exist.
                 </p>
 
                 <div className="flex justify-center gap-4">
-                    <Link href="/" className="rounded-full bg-cyan-500 px-6 py-3 font-semibold text-black shadow-lg transition hover:bg-cyan-400">
+                    <Link href="/" className="rounded-full bg-rose-500 px-6 py-3 font-semibold text-white shadow-lg transition hover:bg-rose-400">
                         Return Home
                     </Link>
                 </div>
@@ -38,16 +38,16 @@ export default function NotFound() {
 
             {/* Decorative stars */}
             <motion.div className="absolute inset-0 z-0" initial={{ opacity: 0 }} animate={{ opacity: 0.5 }} transition={{ delay: 0.5, duration: 1.5 }}>
-                <div className="absolute top-1/3 left-1/4 h-1 w-1 rounded-full bg-cyan-300 blur-[1px]" />
-                <div className="absolute right-1/4 bottom-1/4 h-1.5 w-1.5 rounded-full bg-blue-400 blur-[2px]" />
-                <div className="absolute top-1/4 right-1/2 h-0.5 w-0.5 rounded-full bg-indigo-300 blur-[1px]" />
+                <div className="absolute top-1/3 left-1/4 h-1 w-1 rounded-full bg-rose-300 blur-[1px]" />
+                <div className="absolute right-1/4 bottom-1/4 h-1.5 w-1.5 rounded-full bg-pink-400 blur-[2px]" />
+                <div className="absolute top-1/4 right-1/2 h-0.5 w-0.5 rounded-full bg-rose-300 blur-[1px]" />
             </motion.div>
 
             {/* Footer */}
             <footer className="z-10 mt-20 text-sm text-gray-600">
                 <p>
                     Lost among the stars —{' '}
-                    <Link href="/" className="text-cyan-400 transition hover:text-cyan-300">
+                    <Link href="/" className="text-rose-400 transition hover:text-rose-300">
                         head back to base
                     </Link>
                 </p>

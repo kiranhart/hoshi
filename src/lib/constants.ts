@@ -19,7 +19,7 @@ export const SUBSCRIPTION_TIERS: SubscriptionTierConfig[] = [
         period: 'month',
         features: ['Private profiles', 'Custom branding', 'Priority support', 'Basic analytics'],
         iconName: 'Zap',
-        color: 'from-teal-400 to-cyan-500',
+        color: 'from-rose-400 to-pink-500',
         popular: false,
     },
     {
@@ -29,7 +29,7 @@ export const SUBSCRIPTION_TIERS: SubscriptionTierConfig[] = [
         period: 'month',
         features: ['Everything in Basic', 'Advanced analytics', 'Multiple profiles', 'API access', 'Custom domains'],
         iconName: 'Sparkles',
-        color: 'from-cyan-400 to-blue-500',
+        color: 'from-pink-500 to-rose-500',
         popular: true,
     },
     {
@@ -39,7 +39,7 @@ export const SUBSCRIPTION_TIERS: SubscriptionTierConfig[] = [
         period: 'month',
         features: ['Everything in Pro', 'White-label solution', 'Dedicated support', 'Custom integrations', 'Team management'],
         iconName: 'Building2',
-        color: 'from-blue-500 to-indigo-600',
+        color: 'from-rose-500 to-pink-600',
         popular: false,
     },
 ];
