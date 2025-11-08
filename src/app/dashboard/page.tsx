@@ -40,6 +40,8 @@ export default function DashboardPage() {
         phone: '',
         description: '',
         isPrivate: false,
+        colorMode: 'light' as const,
+        primaryColor: '#FF6B6B',
     });
 
     // Medicines state
@@ -98,6 +100,7 @@ export default function DashboardPage() {
     const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
     const [isCommandPaletteAdding, setIsCommandPaletteAdding] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
 
     // Sidebar navigation state
     const [activeSection, setActiveSection] = useState<DashboardSection>('overview');
@@ -108,6 +111,7 @@ export default function DashboardPage() {
         if (session?.user?.id) {
             checkUsername();
             checkAdminStatus();
+            loadNotificationCount();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session]);
@@ -167,6 +171,18 @@ export default function DashboardPage() {
         }
     };
 
+    const loadNotificationCount = async () => {
+        try {
+            const res = await fetch('/api/notifications');
+            if (res.ok) {
+                const data = await res.json();
+                setUnreadNotificationCount(data.unreadCount || 0);
+            }
+        } catch (error) {
+            console.error('Error loading notification count:', error);
+        }
+    };
+
     const handleUsernameSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setUsernameError('');
@@ -208,6 +224,8 @@ export default function DashboardPage() {
                     phone: data.page?.phone || '',
                     description: data.page?.description || '',
                     isPrivate: data.page?.isPrivate || false,
+                    colorMode: data.page?.colorMode || 'light',
+                    primaryColor: data.page?.primaryColor || '#FF6B6B',
                 });
             }
         } catch (error) {
@@ -603,6 +621,66 @@ export default function DashboardPage() {
         }
     };
 
+    const reorderAllergies = async (allergyIds: string[], optimisticOrder: any[]) => {
+        try {
+            // Optimistically update the state immediately
+            setAllergies(optimisticOrder);
+
+            const response = await fetch('/api/page/allergies/reorder', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ allergyIds }),
+            });
+            
+            if (response.ok) {
+                // Reload to get the latest data from server
+                await loadAllergies();
+            } else {
+                // Revert on error
+                await loadAllergies();
+                throw new Error('Failed to reorder allergies');
+            }
+        } catch (error) {
+            console.error('Error reordering allergies:', error);
+            // Reload to revert to server state
+            await loadAllergies();
+            toast.error('Failed to reorder allergies', {
+                description: 'The order has been reverted. Please try again.',
+            });
+            throw error; // Re-throw so component can handle it
+        }
+    };
+
+    const reorderMedicines = async (medicineIds: string[], optimisticOrder: any[]) => {
+        try {
+            // Optimistically update the state immediately
+            setMedicines(optimisticOrder);
+
+            const response = await fetch('/api/page/medicines/reorder', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ medicineIds }),
+            });
+            
+            if (response.ok) {
+                // Reload to get the latest data from server
+                await loadMedicines();
+            } else {
+                // Revert on error
+                await loadMedicines();
+                throw new Error('Failed to reorder medicines');
+            }
+        } catch (error) {
+            console.error('Error reordering medicines:', error);
+            // Reload to revert to server state
+            await loadMedicines();
+            toast.error('Failed to reorder medicines', {
+                description: 'The order has been reverted. Please try again.',
+            });
+            throw error; // Re-throw so component can handle it
+        }
+    };
+
     // Emergency contacts functions
     const loadContacts = async () => {
         try {
@@ -825,7 +903,7 @@ export default function DashboardPage() {
 
     if (isPending || isCheckingUsername) {
         return (
-            <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white text-gray-900">
+            <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
                     <motion.div
                         className="mb-4 flex justify-center"
@@ -845,13 +923,13 @@ export default function DashboardPage() {
 
     if (!session) {
         return (
-            <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white text-gray-900">
+            <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+                    className="rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md dark:border-gray-700 dark:bg-gray-800/80"
                 >
-                    <p className="text-center text-gray-600">Not authenticated. Please sign in.</p>
+                    <p className="text-center text-gray-600 dark:text-gray-300">Not authenticated. Please sign in.</p>
                 </motion.div>
             </main>
         );
@@ -860,7 +938,7 @@ export default function DashboardPage() {
     // Show onboarding if username is not set
     if (hasUsername === false) {
         return (
-            <main className="relative min-h-screen overflow-hidden bg-white text-gray-900">
+            <main className="relative min-h-screen overflow-hidden bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
                 {/* Animated Gradient Background */}
                 <div className="pointer-events-none absolute inset-0 overflow-hidden">
                     <motion.div
@@ -924,7 +1002,7 @@ export default function DashboardPage() {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="w-full max-w-md rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+                        className="w-full max-w-md rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md dark:border-gray-700 dark:bg-gray-800/80"
                     >
                         <div className="mb-6 text-center">
                             <motion.div
@@ -940,15 +1018,15 @@ export default function DashboardPage() {
                                     </div>
                                 </div>
                             </motion.div>
-                            <h2 className="mb-2 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 bg-clip-text text-3xl font-bold text-transparent">
+                            <h2 className="mb-2 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 bg-clip-text text-3xl font-bold text-transparent dark:from-rose-400 dark:via-pink-400 dark:to-rose-500">
                                 Welcome to Medilink! 🎉
                             </h2>
-                            <p className="text-gray-600">Let's get you set up with a username to get started.</p>
+                            <p className="text-gray-600 dark:text-gray-300">Let's get you set up with a username to get started.</p>
                         </div>
 
                         <form onSubmit={handleUsernameSubmit} className="space-y-4">
                             <div>
-                                <label htmlFor="username" className="mb-2 block text-sm font-medium text-gray-700">
+                                <label htmlFor="username" className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Choose a Username
                                 </label>
                                 <input
@@ -960,13 +1038,13 @@ export default function DashboardPage() {
                                         setUsernameError('');
                                     }}
                                     placeholder="johndoe"
-                                    className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
+                                    className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-cyan-500"
                                     required
                                     pattern="[a-zA-Z0-9_-]{3,50}"
                                     title="3-50 characters, letters, numbers, underscores, and hyphens only"
                                 />
-                                {usernameError && <p className="mt-2 text-sm text-red-500">{usernameError}</p>}
-                                <p className="mt-2 text-xs text-gray-500">3-50 characters. Letters, numbers, underscores, and hyphens only.</p>
+                                {usernameError && <p className="mt-2 text-sm text-red-500 dark:text-red-400">{usernameError}</p>}
+                                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">3-50 characters. Letters, numbers, underscores, and hyphens only.</p>
                             </div>
 
                             <Button
@@ -984,7 +1062,7 @@ export default function DashboardPage() {
     }
 
     return (
-        <main className="relative min-h-screen overflow-hidden bg-white text-gray-900">
+        <main className="relative min-h-screen overflow-hidden bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
             {/* Animated Gradient Background */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
                 <motion.div
@@ -1065,21 +1143,23 @@ export default function DashboardPage() {
                     onSignOut={handleSignOut}
                     subscriptionTier="free"
                     isAdmin={isAdmin}
+                    onMobileMenuToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                    isMobileMenuOpen={isMobileSidebarOpen}
+                    unreadNotificationCount={unreadNotificationCount}
                 />
 
                 {/* Main Content Area */}
-                <main className="overflow-x-hidden">
+                <main className="overflow-x-hidden lg:pl-64">
                     <div className="mx-auto max-w-7xl px-4 py-4 lg:px-6">
-                        <div className="flex gap-4">
-                            <DashboardSidebar
-                                activeSection={activeSection}
-                                onSectionChange={setActiveSection}
-                                isMobileOpen={isMobileSidebarOpen}
-                                onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-                            />
+                        <DashboardSidebar
+                            activeSection={activeSection}
+                            onSectionChange={setActiveSection}
+                            isMobileOpen={isMobileSidebarOpen}
+                            onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                        />
 
-                            {/* Content Section */}
-                            <div className="flex-1">
+                        {/* Content Section */}
+                        <div className="w-full">
                                 {isLoadingPage ? (
                                     <div className="flex items-center justify-center py-12">
                                         <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}>
@@ -1104,79 +1184,95 @@ export default function DashboardPage() {
                                                 transition={{ delay: 0.1 }}
                                                 className="mb-4 pt-4"
                                             >
-                                                <h2 className="mb-1 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 bg-clip-text text-2xl font-bold text-transparent md:text-3xl">
+                                                <h2 className="mb-1 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 bg-clip-text text-2xl font-bold text-transparent md:text-3xl dark:from-rose-400 dark:via-pink-400 dark:to-rose-500">
                                                     Welcome to Your Dashboard
                                                 </h2>
-                                                <p className="text-sm text-gray-600">Manage your medical profile and information.</p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">Manage your medical profile and information.</p>
                                             </motion.div>
 
                                             {/* Quick Stats Grid */}
-                                            <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                                                <div className="rounded-lg border border-gray-200 bg-white/80 p-4 shadow-sm backdrop-blur-md">
-                                                    <div className="mb-1 flex items-center gap-2">
-                                                        <Pill className="h-4 w-4 text-rose-500" />
-                                                        <span className="text-xs font-medium text-gray-600">Medicines</span>
+                                            <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                                <div className="group rounded-xl border border-gray-200/80 bg-gradient-to-br from-white via-white to-rose-50/30 p-5 shadow-md backdrop-blur-md transition-all hover:shadow-lg hover:shadow-rose-500/20 dark:border-gray-700/80 dark:from-gray-800 dark:via-gray-800 dark:to-rose-950/30">
+                                                    <div className="mb-2 flex items-center gap-2.5">
+                                                        <div className="rounded-lg bg-gradient-to-br from-rose-500 to-pink-500 p-1.5 shadow-sm">
+                                                            <Pill className="h-4 w-4 text-white" />
+                                                        </div>
+                                                        <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">Medicines</span>
                                                     </div>
-                                                    <p className="text-xl font-bold text-gray-900">{medicines.length}</p>
+                                                    <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{medicines.length}</p>
                                                 </div>
-                                                <div className="rounded-lg border border-gray-200 bg-white/80 p-4 shadow-sm backdrop-blur-md">
-                                                    <div className="mb-1 flex items-center gap-2">
-                                                        <AlertTriangle className="h-4 w-4 text-pink-500" />
-                                                        <span className="text-xs font-medium text-gray-600">Allergies</span>
+                                                <div className="group rounded-xl border border-gray-200/80 bg-gradient-to-br from-white via-white to-pink-50/30 p-5 shadow-md backdrop-blur-md transition-all hover:shadow-lg hover:shadow-pink-500/20 dark:border-gray-700/80 dark:from-gray-800 dark:via-gray-800 dark:to-pink-950/30">
+                                                    <div className="mb-2 flex items-center gap-2.5">
+                                                        <div className="rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 p-1.5 shadow-sm">
+                                                            <AlertTriangle className="h-4 w-4 text-white" />
+                                                        </div>
+                                                        <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">Allergies</span>
                                                     </div>
-                                                    <p className="text-xl font-bold text-gray-900">{allergies.length}</p>
+                                                    <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{allergies.length}</p>
                                                 </div>
-                                                <div className="rounded-lg border border-gray-200 bg-white/80 p-4 shadow-sm backdrop-blur-md">
-                                                    <div className="mb-1 flex items-center gap-2">
-                                                        <Stethoscope className="h-4 w-4 text-rose-500" />
-                                                        <span className="text-xs font-medium text-gray-600">Diagnoses</span>
+                                                <div className="group rounded-xl border border-gray-200/80 bg-gradient-to-br from-white via-white to-rose-50/30 p-5 shadow-md backdrop-blur-md transition-all hover:shadow-lg hover:shadow-rose-500/20 dark:border-gray-700/80 dark:from-gray-800 dark:via-gray-800 dark:to-rose-950/30">
+                                                    <div className="mb-2 flex items-center gap-2.5">
+                                                        <div className="rounded-lg bg-gradient-to-br from-rose-500 to-pink-500 p-1.5 shadow-sm">
+                                                            <Stethoscope className="h-4 w-4 text-white" />
+                                                        </div>
+                                                        <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">Diagnoses</span>
                                                     </div>
-                                                    <p className="text-xl font-bold text-gray-900">{diagnoses.length}</p>
+                                                    <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{diagnoses.length}</p>
                                                 </div>
-                                                <div className="rounded-lg border border-gray-200 bg-white/80 p-4 shadow-sm backdrop-blur-md">
-                                                    <div className="mb-1 flex items-center gap-2">
-                                                        <Phone className="h-4 w-4 text-pink-500" />
-                                                        <span className="text-xs font-medium text-gray-600">Contacts</span>
+                                                <div className="group rounded-xl border border-gray-200/80 bg-gradient-to-br from-white via-white to-pink-50/30 p-5 shadow-md backdrop-blur-md transition-all hover:shadow-lg hover:shadow-pink-500/20 dark:border-gray-700/80 dark:from-gray-800 dark:via-gray-800 dark:to-pink-950/30">
+                                                    <div className="mb-2 flex items-center gap-2.5">
+                                                        <div className="rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 p-1.5 shadow-sm">
+                                                            <Phone className="h-4 w-4 text-white" />
+                                                        </div>
+                                                        <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">Contacts</span>
                                                     </div>
-                                                    <p className="text-xl font-bold text-gray-900">{contacts.length}</p>
+                                                    <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{contacts.length}</p>
                                                 </div>
                                             </div>
 
                                             {/* Quick Actions */}
-                                            <div className="rounded-lg border border-gray-200 bg-white/80 p-4 shadow-sm backdrop-blur-md">
-                                                <h3 className="mb-3 text-base font-semibold text-gray-900">Quick Actions</h3>
-                                                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                                            <div className="rounded-2xl border border-gray-200/80 bg-gradient-to-br from-white via-white to-rose-50/30 p-6 shadow-lg backdrop-blur-md dark:border-gray-700/80 dark:from-gray-800 dark:via-gray-800 dark:to-rose-950/30">
+                                                <h3 className="mb-4 text-xl font-bold text-gray-900 dark:text-gray-100">Quick Actions</h3>
+                                                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                                                     <button
                                                         onClick={() => setActiveSection('page-info')}
-                                                        className="rounded-lg border border-gray-200 bg-white p-3 text-left transition-all hover:border-rose-300 hover:bg-rose-50"
+                                                        className="group rounded-xl border border-gray-200/80 bg-white p-4 text-left transition-all hover:border-rose-300 hover:bg-gradient-to-br hover:from-rose-50 hover:via-pink-50/30 hover:to-rose-50 hover:shadow-md dark:border-gray-700/80 dark:bg-gray-800 dark:hover:border-rose-600 dark:hover:from-rose-950/50 dark:hover:via-pink-950/30 dark:hover:to-rose-950/50"
                                                     >
-                                                        <LayoutDashboard className="mb-1.5 h-4 w-4 text-rose-500" />
-                                                        <p className="text-sm font-medium text-gray-900">Page Information</p>
-                                                        <p className="text-xs text-gray-600">Update your profile</p>
+                                                        <div className="mb-2 rounded-lg bg-gradient-to-br from-rose-500 to-pink-500 p-1.5 w-fit shadow-sm">
+                                                            <LayoutDashboard className="h-4 w-4 text-white" />
+                                                        </div>
+                                                        <p className="text-sm font-bold text-gray-900 dark:text-gray-100">Page Information</p>
+                                                        <p className="text-xs font-medium text-gray-600 dark:text-gray-300">Update your profile</p>
                                                     </button>
                                                     <button
                                                         onClick={() => setActiveSection('medicines')}
-                                                        className="rounded-lg border border-gray-200 bg-white p-3 text-left transition-all hover:border-rose-300 hover:bg-rose-50"
+                                                        className="group rounded-xl border border-gray-200/80 bg-white p-4 text-left transition-all hover:border-rose-300 hover:bg-gradient-to-br hover:from-rose-50 hover:via-pink-50/30 hover:to-rose-50 hover:shadow-md dark:border-gray-700/80 dark:bg-gray-800 dark:hover:border-rose-600 dark:hover:from-rose-950/50 dark:hover:via-pink-950/30 dark:hover:to-rose-950/50"
                                                     >
-                                                        <Pill className="mb-1.5 h-4 w-4 text-rose-500" />
-                                                        <p className="text-sm font-medium text-gray-900">Medicines</p>
-                                                        <p className="text-xs text-gray-600">Manage medications</p>
+                                                        <div className="mb-2 rounded-lg bg-gradient-to-br from-rose-500 to-pink-500 p-1.5 w-fit shadow-sm">
+                                                            <Pill className="h-4 w-4 text-white" />
+                                                        </div>
+                                                        <p className="text-sm font-bold text-gray-900 dark:text-gray-100">Medicines</p>
+                                                        <p className="text-xs font-medium text-gray-600 dark:text-gray-300">Manage medications</p>
                                                     </button>
                                                     <button
                                                         onClick={() => setActiveSection('allergies')}
-                                                        className="rounded-lg border border-gray-200 bg-white p-3 text-left transition-all hover:border-rose-300 hover:bg-rose-50"
+                                                        className="group rounded-xl border border-gray-200/80 bg-white p-4 text-left transition-all hover:border-rose-300 hover:bg-gradient-to-br hover:from-rose-50 hover:via-pink-50/30 hover:to-rose-50 hover:shadow-md dark:border-gray-700/80 dark:bg-gray-800 dark:hover:border-rose-600 dark:hover:from-rose-950/50 dark:hover:via-pink-950/30 dark:hover:to-rose-950/50"
                                                     >
-                                                        <AlertTriangle className="mb-1.5 h-4 w-4 text-pink-500" />
-                                                        <p className="text-sm font-medium text-gray-900">Allergies</p>
-                                                        <p className="text-xs text-gray-600">Track allergies</p>
+                                                        <div className="mb-2 rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 p-1.5 w-fit shadow-sm">
+                                                            <AlertTriangle className="h-4 w-4 text-white" />
+                                                        </div>
+                                                        <p className="text-sm font-bold text-gray-900 dark:text-gray-100">Allergies</p>
+                                                        <p className="text-xs font-medium text-gray-600 dark:text-gray-300">Track allergies</p>
                                                     </button>
                                                     <button
                                                         onClick={() => setActiveSection('qr-code')}
-                                                        className="rounded-lg border border-gray-200 bg-white p-3 text-left transition-all hover:border-rose-300 hover:bg-rose-50"
+                                                        className="group rounded-xl border border-gray-200/80 bg-white p-4 text-left transition-all hover:border-rose-300 hover:bg-gradient-to-br hover:from-rose-50 hover:via-pink-50/30 hover:to-rose-50 hover:shadow-md dark:border-gray-700/80 dark:bg-gray-800 dark:hover:border-rose-600 dark:hover:from-rose-950/50 dark:hover:via-pink-950/30 dark:hover:to-rose-950/50"
                                                     >
-                                                        <QrCode className="mb-1.5 h-4 w-4 text-rose-500" />
-                                                        <p className="text-sm font-medium text-gray-900">QR Code</p>
-                                                        <p className="text-xs text-gray-600">View your QR code</p>
+                                                        <div className="mb-2 rounded-lg bg-gradient-to-br from-rose-500 to-pink-500 p-1.5 w-fit shadow-sm">
+                                                            <QrCode className="h-4 w-4 text-white" />
+                                                        </div>
+                                                        <p className="text-sm font-bold text-gray-900 dark:text-gray-100">QR Code</p>
+                                                        <p className="text-xs font-medium text-gray-600 dark:text-gray-300">View your QR code</p>
                                                     </button>
                                                 </div>
                                             </div>
@@ -1217,6 +1313,7 @@ export default function DashboardPage() {
                                             onEditChange={(field, value) => setEditingMedicineData({ ...editingMedicineData!, [field]: value })}
                                             onEditSave={(id) => updateMedicine(id, editingMedicineData!)}
                                                 onDelete={deleteMedicine}
+                                                onReorder={reorderMedicines}
                                             />
                                         )}
 
@@ -1245,6 +1342,7 @@ export default function DashboardPage() {
                                             onEditChange={(field, value) => setEditingAllergyData({ ...editingAllergyData, [field]: value })}
                                             onEditSave={(id) => updateAllergy(id, editingAllergyData)}
                                                 onDelete={deleteAllergy}
+                                                onReorder={reorderAllergies}
                                             />
                                         )}
 
@@ -1313,14 +1411,13 @@ export default function DashboardPage() {
                                         )}
 
                                         {activeSection === 'qr-code' && !pageData?.uniqueKey && (
-                                            <div className="rounded-xl border border-gray-200 bg-white/80 p-8 text-center shadow-sm backdrop-blur-md">
-                                                <QrCode className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-                                                <p className="text-gray-600">Please save your page information first to generate a QR code.</p>
+                                            <div className="rounded-xl border border-gray-200 bg-white/80 p-8 text-center shadow-sm backdrop-blur-md dark:border-gray-700 dark:bg-gray-800/80">
+                                                <QrCode className="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-500" />
+                                                <p className="text-gray-600 dark:text-gray-300">Please save your page information first to generate a QR code.</p>
                                             </div>
                                         )}
                                     </motion.div>
                                 )}
-                            </div>
                         </div>
                     </div>
                 </main>

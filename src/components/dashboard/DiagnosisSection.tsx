@@ -177,34 +177,37 @@ export function DiagnosisSection({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="rounded-lg border border-gray-200 bg-white/80 p-5 shadow-sm backdrop-blur-md"
+            className="rounded-2xl border border-gray-200/80 bg-gradient-to-br from-white via-white to-rose-50/30 p-6 shadow-lg backdrop-blur-md dark:border-gray-700/80 dark:from-gray-800 dark:via-gray-800 dark:to-rose-950/30"
         >
-            <div className="mb-4 flex items-center gap-2.5">
-                <div className="rounded-lg bg-gradient-to-br from-rose-400 to-pink-500 p-1.5 shadow-sm">
-                    <Stethoscope className="h-4 w-4 text-white" />
+            <div className="mb-6 flex items-center gap-3">
+                <div className="rounded-xl bg-gradient-to-br from-rose-500 via-pink-500 to-rose-600 p-2.5 shadow-lg shadow-rose-500/30">
+                    <Stethoscope className="h-5 w-5 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">Diagnoses & Conditions</h3>
+                <div>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Diagnoses & Conditions</h3>
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Track and manage your medical diagnoses</p>
+                </div>
             </div>
 
             {/* Add Diagnosis Form */}
-            <div className="mb-4 space-y-3 rounded-lg border border-gray-200 bg-white p-4">
+            <div className="mb-6 space-y-4 rounded-xl border border-gray-200/80 bg-white/80 p-5 shadow-sm backdrop-blur-sm dark:border-gray-700/80 dark:bg-gray-900/80">
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div className="sm:col-span-2 lg:col-span-2">
-                        <label className="mb-2 block text-sm font-medium text-gray-700">Diagnosis/Condition Name</label>
+                        <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Diagnosis/Condition Name</label>
                         <AutocompleteInput
                             value={newDiagnosis.name}
                             onChange={(value) => onNewDiagnosisChange('name', value)}
                             placeholder="Enter diagnosis or condition"
                             suggestions={COMMON_DIAGNOSES}
-                            className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2.5 text-gray-900 placeholder:text-gray-400 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
+                            className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-gray-900 transition-all placeholder:text-gray-400 hover:border-gray-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 dark:hover:border-gray-600 dark:focus:border-rose-400"
                         />
                     </div>
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">Severity (Optional)</label>
+                        <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Severity (Optional)</label>
                         <select
                             value={newDiagnosis.severity}
                             onChange={(e) => onNewDiagnosisChange('severity', e.target.value)}
-                            className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2.5 text-gray-900 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
+                            className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-gray-900 transition-all hover:border-gray-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-gray-600 dark:focus:border-rose-400"
                         >
                             <option value="">None</option>
                             <option value="mild">Mild</option>
@@ -214,30 +217,30 @@ export function DiagnosisSection({
                         </select>
                     </div>
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">Date Diagnosed (Optional)</label>
+                        <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Date Diagnosed (Optional)</label>
                         <input
                             type="date"
                             value={newDiagnosis.diagnosisDate}
                             onChange={(e) => onNewDiagnosisChange('diagnosisDate', e.target.value)}
-                            className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2.5 text-gray-900 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
+                            className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-gray-900 transition-all hover:border-gray-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:border-gray-600 dark:focus:border-rose-400"
                         />
                     </div>
                 </div>
                 <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">Description (Optional)</label>
+                    <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Description (Optional)</label>
                     <textarea
                         value={newDiagnosis.description}
                         onChange={(e) => onNewDiagnosisChange('description', e.target.value)}
                         placeholder="Add any additional notes or details..."
                         rows={3}
-                        className="w-full resize-none rounded-lg border-2 border-gray-200 bg-white px-4 py-2.5 text-gray-900 placeholder:text-gray-400 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
+                        className="w-full resize-none rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-gray-900 transition-all placeholder:text-gray-400 hover:border-gray-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 dark:hover:border-gray-600 dark:focus:border-rose-400"
                     />
                 </div>
                 <div className="flex justify-end">
                     <Button
                         onClick={onAddDiagnosis}
                         disabled={isAddingDiagnosis}
-                        className="cursor-pointer bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 text-white shadow-lg shadow-rose-500/30 hover:from-rose-600 hover:via-pink-600 hover:to-rose-600 hover:shadow-xl hover:shadow-rose-500/40 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="cursor-pointer rounded-xl bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 px-6 py-3 text-white shadow-lg shadow-rose-500/30 transition-all hover:scale-105 hover:from-rose-600 hover:via-pink-600 hover:to-rose-700 hover:shadow-xl hover:shadow-rose-500/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
                     >
                         {isAddingDiagnosis ? (
                             <>
@@ -257,10 +260,12 @@ export function DiagnosisSection({
             {/* Diagnoses List */}
             <div className="space-y-2">
                 {localDiagnoses.length === 0 ? (
-                    <div className="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 py-12 text-center">
-                        <Stethoscope className="mx-auto mb-3 h-12 w-12 text-gray-400" />
-                        <p className="text-gray-500">No diagnoses added yet.</p>
-                        <p className="mt-1 text-sm text-gray-400">Add your first diagnosis or condition above.</p>
+                    <div className="rounded-xl border-2 border-dashed border-gray-200/80 bg-gradient-to-br from-gray-50 to-rose-50/30 py-16 text-center dark:border-gray-700/80 dark:from-gray-800 dark:to-rose-950/30">
+                        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-rose-100 to-pink-100 dark:from-rose-900 dark:to-pink-900">
+                            <Stethoscope className="h-8 w-8 text-rose-400 dark:text-rose-300" />
+                        </div>
+                        <p className="text-base font-semibold text-gray-600 dark:text-gray-300">No diagnoses added yet.</p>
+                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Add your first diagnosis or condition above.</p>
                     </div>
                 ) : (
                     <AnimatePresence mode="popLayout">
@@ -291,14 +296,14 @@ export function DiagnosisSection({
                                     onDragLeave={handleDragLeave}
                                     onDrop={(e) => handleDrop(e, index)}
                                     onDragEnd={handleDragEnd}
-                                    className={`group flex items-start gap-2.5 rounded-lg border bg-white p-3 shadow-sm transition-all duration-200 ${
+                                    className={`group flex items-start gap-3 rounded-xl border bg-white p-4 shadow-sm transition-all duration-200 dark:bg-gray-800 ${
                                         draggedIndex === index
-                                            ? 'scale-95 border-rose-400 opacity-40 shadow-lg'
+                                            ? 'scale-95 border-rose-400 opacity-40 shadow-lg dark:border-rose-500'
                                             : dragOverIndex === index && draggedIndex !== null
-                                              ? 'translate-y-0 border-rose-300 bg-rose-50 shadow-md'
+                                              ? 'translate-y-0 border-rose-400 bg-gradient-to-r from-rose-50 to-pink-50 shadow-lg dark:border-rose-500 dark:from-rose-950/50 dark:to-pink-950/50'
                                               : hoveredIndex === index && draggedIndex !== null && draggedIndex !== index
-                                                ? 'translate-y-1 border-rose-200 bg-rose-50/50'
-                                                : 'border-gray-200 hover:border-rose-200 hover:shadow-md'
+                                                ? 'translate-y-1 border-rose-300 bg-gradient-to-r from-rose-50/50 to-pink-50/50 dark:border-rose-600 dark:from-rose-950/30 dark:to-pink-950/30'
+                                                : 'border-gray-200/80 hover:border-rose-300 hover:bg-gradient-to-r hover:from-rose-50/50 hover:via-pink-50/30 hover:to-rose-50/50 hover:shadow-md dark:border-gray-700/80 dark:hover:border-rose-600 dark:hover:from-rose-950/30 dark:hover:via-pink-950/20 dark:hover:to-rose-950/30'
                                     }`}
                                 >
                                     {editingDiagnosis === diagnosis.id ? (
@@ -311,14 +316,14 @@ export function DiagnosisSection({
                                                             onChange={(value) => onEditChange('name', value)}
                                                             placeholder="Diagnosis name"
                                                             suggestions={COMMON_DIAGNOSES}
-                                                            className="w-full rounded-lg border-2 border-gray-200 bg-white px-3 py-2 text-gray-900 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
+                                                            className="w-full rounded-xl border-2 border-gray-200 bg-white px-3 py-2.5 text-gray-900 transition-all hover:border-gray-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:border-gray-600 dark:focus:border-rose-400"
                                                         />
                                                     </div>
                                                     <div>
                                                         <select
                                                             value={editingDiagnosisData?.severity || ''}
                                                             onChange={(e) => onEditChange('severity', e.target.value)}
-                                                            className="w-full rounded-lg border-2 border-gray-200 bg-white px-3 py-2 text-gray-900 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
+                                                            className="w-full rounded-xl border-2 border-gray-200 bg-white px-3 py-2.5 text-gray-900 transition-all hover:border-gray-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:border-gray-600 dark:focus:border-rose-400"
                                                         >
                                                             <option value="">None</option>
                                                             <option value="mild">Mild</option>
@@ -332,7 +337,7 @@ export function DiagnosisSection({
                                                             type="date"
                                                             value={formatDate(editingDiagnosisData?.diagnosisDate || null)}
                                                             onChange={(e) => onEditChange('diagnosisDate', e.target.value)}
-                                                            className="w-full rounded-lg border-2 border-gray-200 bg-white px-3 py-2 text-gray-900 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
+                                                            className="w-full rounded-xl border-2 border-gray-200 bg-white px-3 py-2.5 text-gray-900 transition-all hover:border-gray-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:border-gray-600 dark:focus:border-rose-400"
                                                         />
                                                     </div>
                                                 </div>
@@ -341,7 +346,7 @@ export function DiagnosisSection({
                                                     onChange={(e) => onEditChange('description', e.target.value)}
                                                     placeholder="Description (optional)"
                                                     rows={2}
-                                                    className="w-full resize-none rounded-lg border-2 border-gray-200 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
+                                                    className="w-full resize-none rounded-xl border-2 border-gray-200 bg-white px-3 py-2.5 text-gray-900 transition-all placeholder:text-gray-400 hover:border-gray-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 focus:outline-none"
                                                 />
                                             </div>
                                             <div className="flex gap-2">
@@ -349,7 +354,7 @@ export function DiagnosisSection({
                                                     onClick={() => onEditSave(diagnosis.id)}
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="cursor-pointer text-green-500 hover:bg-green-50 hover:text-green-600"
+                                                    className="cursor-pointer rounded-xl text-green-600 transition-all hover:bg-gradient-to-br hover:from-green-50 hover:to-emerald-50 hover:text-green-700 hover:shadow-sm"
                                                 >
                                                     <Check className="h-4 w-4" />
                                                 </Button>
@@ -357,7 +362,7 @@ export function DiagnosisSection({
                                                     onClick={onEditCancel}
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="cursor-pointer text-gray-400 hover:text-gray-600"
+                                                    className="cursor-pointer rounded-xl text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300"
                                                 >
                                                     <X className="h-4 w-4" />
                                                 </Button>
@@ -365,22 +370,22 @@ export function DiagnosisSection({
                                         </>
                                     ) : (
                                         <>
-                                            <div className="flex cursor-move items-center justify-center px-2 text-gray-400 transition-colors hover:text-gray-600">
+                                            <div className="flex cursor-move items-center justify-center self-center rounded-lg px-2 py-1 text-gray-400 transition-all hover:bg-gray-100 hover:text-rose-500 dark:hover:bg-gray-700 dark:hover:text-rose-400">
                                                 <GripVertical className="h-5 w-5" />
                                             </div>
-                                            <div className="flex-1 space-y-2">
+                                            <div className="flex-1 space-y-2.5">
                                                 <div className="flex items-center gap-2.5">
-                                                    <h4 className="text-lg font-semibold text-gray-900">{diagnosis.name}</h4>
+                                                    <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100">{diagnosis.name}</h4>
                                                     {diagnosis.severity && (
                                                         <span
-                                                            className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold capitalize shadow-sm ${
+                                                            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold capitalize shadow-md ${
                                                                 diagnosis.severity === 'critical'
-                                                                    ? 'bg-red-600 text-white'
+                                                                    ? 'bg-gradient-to-r from-red-600 to-red-700 text-white'
                                                                     : diagnosis.severity === 'severe'
-                                                                      ? 'bg-orange-500 text-white'
+                                                                      ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
                                                                       : diagnosis.severity === 'moderate'
-                                                                        ? 'bg-yellow-500 text-white'
-                                                                        : 'bg-green-500 text-white'
+                                                                        ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white'
+                                                                        : 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
                                                             }`}
                                                         >
                                                             {diagnosis.severity}
@@ -389,9 +394,9 @@ export function DiagnosisSection({
                                                 </div>
                                                 <div className="flex flex-wrap items-center gap-2">
                                                     {diagnosis.diagnosisDate && (
-                                                        <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-700 shadow-sm">
+                                                        <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-gradient-to-r from-rose-50 to-pink-50 px-3 py-1.5 text-xs font-semibold text-rose-700 shadow-sm">
                                                             <span className="text-rose-600">📅</span>
-                                                            <span className="font-semibold">Diagnosed:</span>
+                                                            <span className="font-bold">Diagnosed:</span>
                                                             <span>
                                                                 {new Date(diagnosis.diagnosisDate).toLocaleDateString('en-US', {
                                                                     month: 'long',
@@ -403,7 +408,7 @@ export function DiagnosisSection({
                                                     )}
                                                 </div>
                                                 {diagnosis.description && (
-                                                    <p className="mt-1.5 text-sm leading-relaxed text-gray-600">{diagnosis.description}</p>
+                                                    <p className="mt-1.5 text-sm leading-relaxed text-gray-600 dark:text-gray-300">{diagnosis.description}</p>
                                                 )}
                                             </div>
                                             <div className="flex items-start gap-1.5 pt-1">
@@ -411,7 +416,7 @@ export function DiagnosisSection({
                                                     onClick={() => onEditStart(diagnosis)}
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 cursor-pointer text-gray-400 transition-colors hover:bg-emerald-50 hover:text-rose-600"
+                                                    className="h-9 w-9 cursor-pointer rounded-xl text-gray-400 transition-all hover:bg-gradient-to-br hover:from-rose-50 hover:to-pink-50 hover:text-rose-600 hover:shadow-sm"
                                                 >
                                                     <Edit2 className="h-4 w-4" />
                                                 </Button>
@@ -419,7 +424,7 @@ export function DiagnosisSection({
                                                     onClick={() => onDelete(diagnosis.id, diagnosis.name)}
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 cursor-pointer text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                                                    className="h-9 w-9 cursor-pointer rounded-xl text-gray-400 transition-all hover:bg-gradient-to-br hover:from-red-50 hover:to-rose-50 hover:text-red-600 hover:shadow-sm"
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>

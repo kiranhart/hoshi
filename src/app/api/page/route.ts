@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
         username,
         uniqueKey,
         isPrivate: false,
+        colorMode: 'light',
       });
       pageData = await db.select().from(page).where(eq(page.userId, session.user.id)).limit(1);
     }
@@ -53,7 +54,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { firstName, lastName, email, phone, description, isPrivate } = body;
+    const { firstName, lastName, email, phone, description, isPrivate, colorMode, primaryColor } = body;
 
     // Get user's username
     const userData = await db.select({ username: user.username }).from(user).where(eq(user.id, session.user.id)).limit(1);
@@ -80,6 +81,8 @@ export async function PUT(req: NextRequest) {
         phone: phone || null,
         description: description || null,
         isPrivate: isPrivate ?? false,
+        colorMode: colorMode || 'light',
+        primaryColor: primaryColor || null,
       });
     } else {
       // Update existing page
@@ -91,6 +94,8 @@ export async function PUT(req: NextRequest) {
           phone: phone || null,
           description: description || null,
           isPrivate: isPrivate ?? pageData[0].isPrivate,
+          colorMode: colorMode ?? pageData[0].colorMode,
+          primaryColor: primaryColor !== undefined ? primaryColor : pageData[0].primaryColor,
         })
         .where(eq(page.userId, session.user.id));
     }

@@ -1,7 +1,7 @@
 import { auth } from '@/lib/auth';
 import db from '@/db';
 import { page, allergy } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, asc, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 
@@ -20,7 +20,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ allergies: [] });
     }
 
-    const allergies = await db.select().from(allergy).where(eq(allergy.pageId, pageData[0].id));
+    const allergies = await db.select().from(allergy)
+      .where(eq(allergy.pageId, pageData[0].id))
+      .orderBy(asc(allergy.displayOrder), asc(allergy.createdAt));
     return NextResponse.json({ allergies });
   } catch (error) {
     console.error('Error fetching allergies:', error);
@@ -54,6 +56,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Page not found. Please set up your page first.' }, { status: 404 });
     }
 
+    // Get the max display order to add new item at the end
+    const maxOrderResult = await db
+      .select({ maxOrder: sql<number>`MAX(${allergy.displayOrder})` })
+      .from(allergy)
+      .where(eq(allergy.pageId, pageData[0].id))
+      .limit(1);
+
+    const nextOrder = (maxOrderResult[0]?.maxOrder ?? -1) + 1;
+
     const allergyId = randomUUID();
     await db.insert(allergy).values({
       id: allergyId,
@@ -62,6 +73,7 @@ export async function POST(req: NextRequest) {
       reaction: reaction?.trim() || null,
       severity: allergySeverity,
       isMedicine: isMedicine === true,
+      displayOrder: nextOrder,
     });
 
     const created = await db.select().from(allergy).where(eq(allergy.id, allergyId)).limit(1);

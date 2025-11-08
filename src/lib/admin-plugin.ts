@@ -3,12 +3,15 @@ import { user } from '@/db/schema';
 import { eq, count } from 'drizzle-orm';
 import type { BetterAuthPlugin } from 'better-auth';
 
+// Note: Plugin structure may have changed in better-auth v1.3.34
+// This plugin is currently not used - admin assignment is handled by migration script
 export const adminPlugin: BetterAuthPlugin = {
   id: 'admin-plugin',
   hooks: {
+    // @ts-ignore - Plugin hooks structure may have changed
     user: {
       created: {
-        after: async ({ user: newUser }) => {
+        after: async ({ user: newUser }: any) => {
           try {
             // Check if this is the first user
             const [userCount] = await db

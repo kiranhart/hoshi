@@ -14,7 +14,8 @@ import {
   Save,
   X,
   Heart,
-  LogOut
+  LogOut,
+  Package
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
@@ -166,7 +167,7 @@ export default function AdminDashboardPage() {
 
   if (isPending || isLoading) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white text-gray-900">
+      <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
           <motion.div
             className="mb-4 flex justify-center"
@@ -178,7 +179,7 @@ export default function AdminDashboardPage() {
               <Heart className="h-8 w-8 text-white" fill="white" />
             </div>
           </motion.div>
-          <p className="text-lg text-gray-600">Loading...</p>
+          <p className="text-lg text-gray-600 dark:text-gray-300">Loading...</p>
         </motion.div>
       </main>
     );
@@ -194,7 +195,7 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-white text-gray-900">
+    <main className="relative min-h-screen overflow-hidden bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
       {/* Animated Gradient Background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <motion.div
@@ -227,7 +228,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Header */}
-      <div className="relative z-10 border-b border-gray-200 bg-white/80 backdrop-blur-md">
+      <div className="relative z-10 border-b border-gray-200 bg-white/80 backdrop-blur-md dark:border-gray-700 dark:bg-gray-800/80">
         <div className="mx-auto max-w-7xl px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -243,8 +244,8 @@ export default function AdminDashboardPage() {
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{session.user.name}</p>
-                <p className="text-xs text-gray-500">{session.user.email}</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{session.user.name}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{session.user.email}</p>
               </div>
               {session.user.image && (
                 <img
@@ -271,14 +272,14 @@ export default function AdminDashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="border-gray-200 bg-white/80 backdrop-blur-sm">
+            <Card className="border-gray-200 bg-white/80 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Users</CardTitle>
                 <Users className="h-4 w-4 text-blue-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats?.users || 0}</div>
-                <p className="text-xs text-gray-500">Registered users</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Registered users</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -288,14 +289,14 @@ export default function AdminDashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="border-gray-200 bg-white/80 backdrop-blur-sm">
+            <Card className="border-gray-200 bg-white/80 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Medicines</CardTitle>
                 <Pill className="h-4 w-4 text-green-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats?.medicines || 0}</div>
-                <p className="text-xs text-gray-500">Total medicines</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Total medicines</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -305,14 +306,14 @@ export default function AdminDashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <Card className="border-gray-200 bg-white/80 backdrop-blur-sm">
+            <Card className="border-gray-200 bg-white/80 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Diagnoses</CardTitle>
                 <Stethoscope className="h-4 w-4 text-purple-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats?.diagnoses || 0}</div>
-                <p className="text-xs text-gray-500">Total diagnoses</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Total diagnoses</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -322,47 +323,79 @@ export default function AdminDashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <Card className="border-gray-200 bg-white/80 backdrop-blur-sm">
+            <Card className="border-gray-200 bg-white/80 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Allergies</CardTitle>
                 <AlertTriangle className="h-4 w-4 text-red-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats?.allergies || 0}</div>
-                <p className="text-xs text-gray-500">Total allergies</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Total allergies</p>
               </CardContent>
             </Card>
           </motion.div>
         </div>
 
-        {/* Users Table */}
+        {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
+          className="mb-8"
         >
-          <Card className="border-gray-200 bg-white/80 backdrop-blur-sm">
+          <Card className="border-gray-200 bg-white/80 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80">
             <CardHeader>
-              <CardTitle>All Users</CardTitle>
-              <CardDescription>Manage user accounts and permissions</CardDescription>
+              <CardTitle className="dark:text-gray-100">Quick Actions</CardTitle>
+              <CardDescription className="dark:text-gray-400">Access admin management pages</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <Button
+                  onClick={() => router.push('/admin/orders')}
+                  variant="outline"
+                  className="h-auto flex-col items-start justify-start p-4 hover:bg-gradient-to-r hover:from-rose-50 hover:via-pink-50 hover:to-rose-50 dark:hover:from-rose-950/50 dark:hover:via-pink-950/50 dark:hover:to-rose-950/50"
+                >
+                  <div className="mb-2 flex items-center gap-2">
+                    <Package className="h-5 w-5 text-rose-500" />
+                    <span className="font-semibold dark:text-gray-100">Order Management</span>
+                  </div>
+                  <p className="text-left text-sm text-gray-500 dark:text-gray-400">
+                    View and manage customer orders, update status, and add tracking numbers
+                  </p>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Users Table */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <Card className="border-gray-200 bg-white/80 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80">
+            <CardHeader>
+              <CardTitle className="dark:text-gray-100">All Users</CardTitle>
+              <CardDescription className="dark:text-gray-400">Manage user accounts and permissions</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Name</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Email</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Username</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Admin</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Verified</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Created</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Name</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Email</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Username</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Admin</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Verified</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Created</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {users.map((user) => (
-                      <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">
                         {editingUser === user.id ? (
                           <>
                             <td className="px-4 py-3">
@@ -370,7 +403,7 @@ export default function AdminDashboardPage() {
                                 type="text"
                                 value={editForm.name || ''}
                                 onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                                className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+                                className="w-full rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                               />
                             </td>
                             <td className="px-4 py-3">
@@ -378,7 +411,7 @@ export default function AdminDashboardPage() {
                                 type="email"
                                 value={editForm.email || ''}
                                 onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                                className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+                                className="w-full rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                               />
                             </td>
                             <td className="px-4 py-3">
@@ -386,7 +419,7 @@ export default function AdminDashboardPage() {
                                 type="text"
                                 value={editForm.username || ''}
                                 onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
-                                className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+                                className="w-full rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                               />
                             </td>
                             <td className="px-4 py-3">
@@ -405,7 +438,7 @@ export default function AdminDashboardPage() {
                                 className="h-4 w-4"
                               />
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-500">
+                            <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
                               {new Date(user.createdAt).toLocaleDateString()}
                             </td>
                             <td className="px-4 py-3">
@@ -429,28 +462,28 @@ export default function AdminDashboardPage() {
                           </>
                         ) : (
                           <>
-                            <td className="px-4 py-3 text-sm font-medium">{user.name}</td>
-                            <td className="px-4 py-3 text-sm text-gray-600">{user.email}</td>
-                            <td className="px-4 py-3 text-sm text-gray-600">{user.username || '-'}</td>
+                            <td className="px-4 py-3 text-sm font-medium dark:text-gray-100">{user.name}</td>
+                            <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{user.email}</td>
+                            <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{user.username || '-'}</td>
                             <td className="px-4 py-3">
                               {user.isAdmin ? (
-                                <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-800">
+                                <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-800 dark:bg-purple-900 dark:text-purple-200">
                                   Admin
                                 </span>
                               ) : (
-                                <span className="text-sm text-gray-500">-</span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">-</span>
                               )}
                             </td>
                             <td className="px-4 py-3">
                               {user.emailVerified ? (
-                                <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
+                                <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200">
                                   Verified
                                 </span>
                               ) : (
-                                <span className="text-sm text-gray-500">Unverified</span>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">Unverified</span>
                               )}
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-500">
+                            <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
                               {new Date(user.createdAt).toLocaleDateString()}
                             </td>
                             <td className="px-4 py-3">

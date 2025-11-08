@@ -16,7 +16,7 @@ export default function SignInPage() {
     };
 
     return (
-        <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white text-gray-900">
+        <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
             {/* Animated Gradient Background */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
                 <motion.div
@@ -95,7 +95,7 @@ export default function SignInPage() {
                 transition={{ duration: 0.8 }}
                 className="relative z-10 w-full max-w-md px-6"
             >
-                <div className="rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md">
+                <div className="rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md dark:border-gray-700 dark:bg-gray-800/80">
                     {/* Logo */}
                     <motion.div
                         className="mb-6 flex justify-center"
@@ -120,7 +120,7 @@ export default function SignInPage() {
                     <h1 className="mb-2 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 bg-clip-text text-center text-3xl font-extrabold text-transparent">
                         Welcome to Medi Link
                     </h1>
-                    <p className="mb-8 text-center text-gray-600">Sign in or create an account to get started</p>
+                    <p className="mb-8 text-center text-gray-600 dark:text-gray-300">Sign in or create an account to get started</p>
 
                     {/* Social Sign In Buttons */}
                     <div className="space-y-3">
@@ -129,7 +129,7 @@ export default function SignInPage() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => signInWithProvider('google')}
-                            className="w-full cursor-pointer rounded-lg border-2 border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50"
+                            className="w-full cursor-pointer rounded-lg border-2 border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-700"
                         >
                             <div className="flex items-center justify-center gap-3">
                                 <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -159,7 +159,7 @@ export default function SignInPage() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => signInWithProvider('microsoft')}
-                            className="w-full cursor-pointer rounded-lg border-2 border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50"
+                            className="w-full cursor-pointer rounded-lg border-2 border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-700"
                         >
                             <div className="flex items-center justify-center gap-3">
                                 <svg className="h-5 w-5" viewBox="0 0 23 23" fill="none">
@@ -177,7 +177,7 @@ export default function SignInPage() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => signInWithProvider('apple')}
-                            className="w-full cursor-pointer rounded-lg border-2 border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50"
+                            className="w-full cursor-pointer rounded-lg border-2 border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-700"
                         >
                             <div className="flex items-center justify-center gap-3">
                                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
@@ -187,8 +187,8 @@ export default function SignInPage() {
                             </div>
                         </motion.button>
                     </div>
-                    <p className="mt-4 text-center text-sm text-gray-500">
-                        <Link href="/" className="text-gray-600 transition hover:text-gray-900">
+                    <p className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                        <Link href="/" className="text-gray-600 transition hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
                             ← Back to home
                         </Link>
                     </p>
@@ -200,7 +200,7 @@ export default function SignInPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="relative z-10 mt-8 text-center text-sm text-gray-500"
+                className="relative z-10 mt-8 text-center text-sm text-gray-500 dark:text-gray-400"
             >
                 <p>
                     Made with <span className="text-pink-500">❤️</span> for better healthcare • © {new Date().getFullYear()} Medi Link

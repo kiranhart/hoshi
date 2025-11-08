@@ -5,6 +5,7 @@ export interface Medicine {
     name: string;
     dosage: string | null;
     frequency: string | null;
+    displayOrder: number;
 }
 
 export interface Allergy {
@@ -13,6 +14,7 @@ export interface Allergy {
     reaction: string | null;
     severity: string;
     isMedicine: boolean;
+    displayOrder: number;
 }
 
 export interface Diagnosis {

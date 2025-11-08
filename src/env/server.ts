@@ -15,8 +15,16 @@ export const env = createEnv({
         APPLE_CLIENT_SECRET: z.string().optional(),
         UPLOADTHING_SECRET: z.string().optional(),
         UPLOADTHING_APP_ID: z.string().optional(),
+        STRIPE_SECRET_KEY: z.string().optional(),
+        STRIPE_WEBHOOK_SECRET: z.string().optional(),
+    },
+    client: {
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
     },
     emptyStringAsUndefined: true,
     // eslint-disable-next-line n/no-process-env
-    experimental__runtimeEnv: process.env
+    experimental__runtimeEnv: {
+        ...process.env,
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    }
 });

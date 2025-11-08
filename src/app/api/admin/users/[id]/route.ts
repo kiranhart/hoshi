@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm';
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check if user is admin
@@ -15,6 +15,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
+    const { id } = await params;
     const body = await req.json();
     const { name, email, username, isAdmin: isAdminValue, emailVerified } = body;
 
@@ -30,13 +31,13 @@ export async function PUT(
     await db
       .update(user)
       .set(updateData)
-      .where(eq(user.id, params.id));
+      .where(eq(user.id, id));
 
     // Fetch updated user
     const [updatedUser] = await db
       .select()
       .from(user)
-      .where(eq(user.id, params.id))
+      .where(eq(user.id, id))
       .limit(1);
 
     return NextResponse.json({ user: updatedUser });
@@ -57,7 +58,7 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check if user is admin
@@ -66,8 +67,9 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
+    const { id } = await params;
     // Delete user (cascade will handle related records)
-    await db.delete(user).where(eq(user.id, params.id));
+    await db.delete(user).where(eq(user.id, id));
 
     return NextResponse.json({ success: true });
   } catch (error) {

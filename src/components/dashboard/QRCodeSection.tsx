@@ -85,19 +85,19 @@ export function QRCodeSection({ uniqueKey, pageUrl }: QRCodeSectionProps) {
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-lg border border-gray-200 bg-white/80 p-5 shadow-sm backdrop-blur-md"
+            className="rounded-lg border border-gray-200 bg-white/80 p-5 shadow-sm backdrop-blur-md dark:border-gray-700 dark:bg-gray-800/80"
         >
             <div className="mb-4 flex items-center gap-2.5">
                 <div className="rounded-lg bg-gradient-to-br from-rose-400 to-pink-500 p-1.5 shadow-sm">
                     <QrCode className="h-4 w-4 text-white" />
                 </div>
-                <h2 className="text-xl font-bold text-gray-900">Share Your Medical Information</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Share Your Medical Information</h2>
             </div>
 
             <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
                 {/* QR Code Display */}
                 <div className="flex-shrink-0">
-                    <div className="rounded-lg border-2 border-gray-200 bg-white p-4">
+                    <div className="rounded-lg border-2 border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
                         <div ref={qrContainerRef}>
                             <SVG
                                 text={qrUrl}
@@ -117,15 +117,15 @@ export function QRCodeSection({ uniqueKey, pageUrl }: QRCodeSectionProps) {
                 {/* Actions */}
                 <div className="flex-1 space-y-4">
                     <div>
-                        <p className="mb-2 text-sm font-medium text-gray-700">Your Public Link:</p>
-                        <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 p-3">
-                            <code className="flex-1 text-sm break-all text-gray-900">{qrUrl}</code>
+                        <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Your Public Link:</p>
+                        <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-900">
+                            <code className="flex-1 text-sm break-all text-gray-900 dark:text-gray-100">{qrUrl}</code>
                             <button
                                 onClick={() => {
                                     navigator.clipboard.writeText(qrUrl);
                                     toast.success('Link copied to clipboard!');
                                 }}
-                                className="flex-shrink-0 rounded-md bg-gray-200 px-3 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-300"
+                                className="flex-shrink-0 rounded-md bg-gray-200 px-3 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                             >
                                 Copy
                             </button>

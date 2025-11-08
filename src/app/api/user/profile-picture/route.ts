@@ -37,7 +37,7 @@ async function deleteUploadthingFile(fileUrl: string): Promise<boolean> {
     console.log('Secret starts with:', uploadthingSecret.substring(0, 20));
 
     // UploadThing v6 delete API - try different header formats
-    let response;
+    let response: Response;
     try {
       // First try with X-Uploadthing-Secret (standard v6 format)
       response = await fetch('https://api.uploadthing.com/v6/deleteFile', {
@@ -51,7 +51,12 @@ async function deleteUploadthingFile(fileUrl: string): Promise<boolean> {
 
       // If that fails with 400, try with Authorization header
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: await response.text() }));
+        let errorData: any;
+        try {
+          errorData = await response.json();
+        } catch {
+          errorData = { error: await response.text() };
+        }
         console.log('First attempt failed, trying Authorization header:', errorData);
         
         response = await fetch('https://api.uploadthing.com/v6/deleteFile', {

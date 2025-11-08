@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { Activity, AlertTriangle, Heart, Lock, Mail, Phone, Pill, QrCode, Stethoscope, User } from 'lucide-react';
 
 import { QRCodeDisplay } from '@/components/QRCodeDisplay';
+import { getThemeColors, getColorModeForPage, type PublicPageColorMode } from '@/lib/public-page-themes';
 
 interface PublicPageData {
     page: {
@@ -20,6 +21,8 @@ interface PublicPageData {
         userImage: string | null;
         userName: string | null;
         uniqueKey: string;
+        colorMode?: string | null;
+        primaryColor?: string | null;
     };
     medicines: Array<{
         id: string;
@@ -97,9 +100,13 @@ export default function PublicPage() {
         fetchData();
     }, [identifier]);
 
+    // Get color mode early for loading/error states
+    const colorMode = data ? getColorModeForPage(data.page?.colorMode) : 'light';
+    const colorsForLoading = getThemeColors(colorMode, data?.page?.primaryColor);
+
     if (isLoading) {
         return (
-            <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white text-gray-900">
+            <main className={`relative flex min-h-screen items-center justify-center overflow-hidden ${colorsForLoading.background} ${colorsForLoading.primaryText}`}>
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
                     <motion.div
                         className="mb-4 flex justify-center"
@@ -111,7 +118,7 @@ export default function PublicPage() {
                             <Heart className="h-8 w-8 text-white" fill="white" />
                         </div>
                     </motion.div>
-                    <p className="text-lg text-gray-600">Loading...</p>
+                    <p className={`text-lg ${colorsForLoading.secondaryText}`}>Loading...</p>
                 </motion.div>
             </main>
         );
@@ -119,7 +126,7 @@ export default function PublicPage() {
 
     if (error || !data) {
         return (
-            <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white text-gray-900">
+            <main className={`relative flex min-h-screen items-center justify-center overflow-hidden ${colorsForLoading.background} ${colorsForLoading.primaryText}`}>
                 {/* Animated Gradient Background */}
                 <div className="pointer-events-none absolute inset-0 overflow-hidden">
                     <motion.div
@@ -154,7 +161,7 @@ export default function PublicPage() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="relative z-10 w-full max-w-md rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+                    className={`relative z-10 w-full max-w-md rounded-2xl border ${colorsForLoading.cardBorder} ${colorsForLoading.cardBackground} p-8 shadow-xl backdrop-blur-md`}
                 >
                     <div className="mb-6 flex justify-center">
                         {isPrivate ? (
@@ -167,8 +174,8 @@ export default function PublicPage() {
                             </div>
                         )}
                     </div>
-                    <h2 className="mb-4 text-center text-2xl font-bold text-gray-900">{isPrivate ? 'This Page is Private' : 'Page Not Found'}</h2>
-                    <p className="mb-6 text-center text-gray-600">
+                    <h2 className={`mb-4 text-center text-2xl font-bold ${colorsForLoading.headingText}`}>{isPrivate ? 'This Page is Private' : 'Page Not Found'}</h2>
+                    <p className={`mb-6 text-center ${colorsForLoading.secondaryText}`}>
                         {isPrivate
                             ? 'This medical information page has been set to private by its owner. It can only be accessed via the unique link provided by the owner.'
                             : 'The page you are looking for does not exist or has been removed.'}
@@ -188,9 +195,16 @@ export default function PublicPage() {
 
     const { page, medicines, allergies, diagnoses, contacts } = data;
     const fullName = [page.firstName, page.lastName].filter(Boolean).join(' ') || page.userName || 'User';
+    
+    // Get colors with primary color for neobrutalism (reassign with proper typing)
+    const themeColors = getThemeColors(colorMode, page.primaryColor);
+    const colorsWithExtras = themeColors as typeof themeColors & { _primaryColor?: string; _darkerColor?: string };
 
+    // Use colors with extras for main content
+    const colors = colorsWithExtras;
+    
     return (
-        <main className="relative min-h-screen overflow-hidden bg-white text-gray-900">
+        <main className={`relative min-h-screen overflow-hidden ${colors.background} ${colors.primaryText}`}>
             {/* Animated Gradient Background */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
                 <motion.div
@@ -254,7 +268,13 @@ export default function PublicPage() {
             <div className="relative z-10 min-h-screen">
                 {/* Header */}
                 <div className="mx-auto max-w-7xl px-6 pt-12 pb-8">
-                    <Link href="/" className="mb-8 inline-flex items-center gap-2 text-gray-600 transition-colors hover:text-gray-900">
+                    <Link 
+                        href="/" 
+                        className={`mb-8 inline-flex items-center gap-2 ${colors.secondaryText} transition-colors ${
+                            colorMode === 'neobrutalism' ? 'hover:underline' : colors.linkHover
+                        }`}
+                        style={colorMode === 'neobrutalism' ? { color: colors._primaryColor } : undefined}
+                    >
                         <Heart className="h-5 w-5" />
                         <span className="font-semibold">Medi Link</span>
                     </Link>
@@ -266,31 +286,47 @@ export default function PublicPage() {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+                        className={`mb-8 rounded-2xl border ${colors.cardBorder} ${colors.cardBackground} p-8 shadow-xl backdrop-blur-md`}
                     >
                         <div className="flex flex-col items-center text-center md:flex-row md:text-left">
                             {/* Profile Picture */}
                             <div className="mb-6 md:mr-8 md:mb-0">
                                 {page.userImage ? (
-                                    <img src={page.userImage} alt={fullName} className="h-32 w-32 rounded-full border-4 border-white shadow-lg" />
+                                    <img src={page.userImage} alt={fullName} className={`h-32 w-32 rounded-full border-4 ${colors.profileImageBorder} shadow-lg`} />
                                 ) : (
-                                    <div className="flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 via-pink-400 to-rose-500 shadow-lg">
-                                        <User className="h-16 w-16 text-white" />
+                                    <div 
+                                        className={`flex h-32 w-32 items-center justify-center rounded-full shadow-lg ${
+                                            colorMode === 'neobrutalism' ? '' : `bg-gradient-to-br ${colors.iconBackground}`
+                                        }`}
+                                        style={colorMode === 'neobrutalism' ? { backgroundColor: colors._primaryColor } : undefined}
+                                    >
+                                        <User className={`h-16 w-16 ${colors.iconColor}`} />
                                     </div>
                                 )}
                             </div>
 
                             {/* Profile Info */}
                             <div className="flex-1">
-                                <h1 className="mb-2 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 bg-clip-text text-4xl font-bold text-transparent">
+                                <h1 
+                                    className={`mb-2 text-4xl font-bold ${
+                                        colorMode === 'neobrutalism' 
+                                            ? '' 
+                                            : `bg-gradient-to-r ${colors.accent} bg-clip-text text-transparent`
+                                    }`}
+                                    style={colorMode === 'neobrutalism' ? { color: colors._primaryColor } : undefined}
+                                >
                                     {fullName}
                                 </h1>
-                                {page.description && <p className="mb-4 text-lg text-gray-600">{page.description}</p>}
-                                <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                                {page.description && <p className={`mb-4 text-lg ${colors.secondaryText}`}>{page.description}</p>}
+                                <div className={`flex flex-wrap gap-4 text-sm ${colors.secondaryText}`}>
                                     {page.email && (
                                         <div className="flex items-center gap-2">
                                             <Mail className="h-4 w-4" />
-                                            <a href={`mailto:${page.email}`} className="hover:text-cyan-600">
+                                            <a 
+                                                href={`mailto:${page.email}`} 
+                                                className={colorMode === 'neobrutalism' ? 'hover:underline' : colors.linkHover}
+                                                style={colorMode === 'neobrutalism' ? { color: colors._primaryColor } : undefined}
+                                            >
                                                 {page.email}
                                             </a>
                                         </div>
@@ -298,7 +334,11 @@ export default function PublicPage() {
                                     {page.phone && (
                                         <div className="flex items-center gap-2">
                                             <Phone className="h-4 w-4" />
-                                            <a href={`tel:${page.phone}`} className="hover:text-cyan-600">
+                                            <a 
+                                                href={`tel:${page.phone}`} 
+                                                className={colorMode === 'neobrutalism' ? 'hover:underline' : colors.linkHover}
+                                                style={colorMode === 'neobrutalism' ? { color: colors._primaryColor } : undefined}
+                                            >
                                                 {page.phone}
                                             </a>
                                         </div>
@@ -314,41 +354,46 @@ export default function PublicPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+                            className={`mb-8 rounded-2xl border ${colors.cardBorder} ${colors.cardBackground} p-8 shadow-xl backdrop-blur-md`}
                         >
                             <div className="mb-6 flex items-center gap-3">
-                                <div className="rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 p-3 shadow-md">
-                                    <Pill className="h-6 w-6 text-white" />
+                                <div 
+                                    className={`rounded-xl p-3 shadow-md ${
+                                        colorMode === 'neobrutalism' ? '' : `bg-gradient-to-br ${colors.iconBackground}`
+                                    }`}
+                                    style={colorMode === 'neobrutalism' ? { backgroundColor: colors._primaryColor } : undefined}
+                                >
+                                    <Pill className={`h-6 w-6 ${colors.iconColor}`} />
                                 </div>
-                                <h2 className="text-2xl font-bold text-gray-900">Current Medications</h2>
+                                <h2 className={`text-2xl font-bold ${colors.headingText}`}>Current Medications</h2>
                             </div>
                             <div className="grid gap-4 md:grid-cols-2">
                                 {medicines.map((medicine) => (
                                     <div
                                         key={medicine.id}
-                                        className="rounded-lg border-2 border-gray-200 bg-white p-5 transition-all hover:border-cyan-300 hover:shadow-md"
+                                        className={`rounded-lg border-2 ${colors.cardBorder} ${colors.cardBackground} p-5 transition-all hover:shadow-md`}
                                     >
-                                        <h3 className="mb-4 text-lg font-bold text-gray-900">{medicine.name}</h3>
+                                        <h3 className={`mb-4 text-lg font-bold ${colors.headingText}`}>{medicine.name}</h3>
                                         <div className="space-y-3">
                                             {medicine.dosage && (
-                                                <div className="flex items-start gap-3 rounded-lg bg-cyan-50 p-3">
-                                                    <div className="mt-0.5 rounded-md bg-cyan-100 p-1.5">
-                                                        <Pill className="h-4 w-4 text-cyan-600" />
+                                                <div className={`flex items-start gap-3 rounded-lg ${colors.medicineDosageBg} p-3`}>
+                                                    <div className={`mt-0.5 rounded-md ${colors.medicineDosageIconBg} p-1.5`}>
+                                                        <Pill className={`h-4 w-4 ${colors.medicineDosageIconColor}`} />
                                                     </div>
                                                     <div className="flex-1">
-                                                        <p className="text-xs font-semibold tracking-wide text-cyan-700 uppercase">Dosage</p>
-                                                        <p className="mt-0.5 text-sm font-medium text-gray-900">{medicine.dosage}</p>
+                                                        <p className={`text-xs font-semibold tracking-wide ${colors.medicineDosageLabel} uppercase`}>Dosage</p>
+                                                        <p className={`mt-0.5 text-sm font-medium ${colors.primaryText}`}>{medicine.dosage}</p>
                                                     </div>
                                                 </div>
                                             )}
                                             {medicine.frequency && (
-                                                <div className="flex items-start gap-3 rounded-lg bg-blue-50 p-3">
-                                                    <div className="mt-0.5 rounded-md bg-blue-100 p-1.5">
-                                                        <Activity className="h-4 w-4 text-blue-600" />
+                                                <div className={`flex items-start gap-3 rounded-lg ${colors.medicineFrequencyBg} p-3`}>
+                                                    <div className={`mt-0.5 rounded-md ${colors.medicineFrequencyIconBg} p-1.5`}>
+                                                        <Activity className={`h-4 w-4 ${colors.medicineFrequencyIconColor}`} />
                                                     </div>
                                                     <div className="flex-1">
-                                                        <p className="text-xs font-semibold tracking-wide text-blue-700 uppercase">Frequency</p>
-                                                        <p className="mt-0.5 text-sm font-medium text-gray-900">{medicine.frequency}</p>
+                                                        <p className={`text-xs font-semibold tracking-wide ${colors.medicineFrequencyLabel} uppercase`}>Frequency</p>
+                                                        <p className={`mt-0.5 text-sm font-medium ${colors.primaryText}`}>{medicine.frequency}</p>
                                                     </div>
                                                 </div>
                                             )}
@@ -365,72 +410,81 @@ export default function PublicPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+                            className={`mb-8 rounded-2xl border ${colors.cardBorder} ${colors.cardBackground} p-8 shadow-xl backdrop-blur-md`}
                         >
                             <div className="mb-6 flex items-center gap-3">
-                                <div className="rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 p-3 shadow-md">
-                                    <AlertTriangle className="h-6 w-6 text-white" />
+                                <div 
+                                    className={`rounded-xl p-3 shadow-md ${
+                                        colorMode === 'neobrutalism' ? '' : `bg-gradient-to-br ${colors.iconBackground}`
+                                    }`}
+                                    style={colorMode === 'neobrutalism' ? { backgroundColor: colors._primaryColor } : undefined}
+                                >
+                                    <AlertTriangle className={`h-6 w-6 ${colors.iconColor}`} />
                                 </div>
-                                <h2 className="text-2xl font-bold text-gray-900">Allergies</h2>
+                                <h2 className={`text-2xl font-bold ${colors.headingText}`}>Allergies</h2>
                             </div>
                             <div className="grid gap-4 md:grid-cols-2">
                                 {allergies.map((allergy) => {
-                                    // Color coding based on severity
-                                    const severityColors = {
-                                        'life-threatening': {
-                                            border: 'border-red-500',
-                                            bg: 'bg-red-50',
-                                            text: 'text-red-900',
-                                            reactionText: 'text-red-700',
-                                            badge: 'bg-red-600 text-white',
-                                        },
-                                        severe: {
-                                            border: 'border-orange-400',
-                                            bg: 'bg-orange-50',
-                                            text: 'text-orange-900',
-                                            reactionText: 'text-orange-700',
-                                            badge: 'bg-orange-500 text-white',
-                                        },
-                                        moderate: {
-                                            border: 'border-yellow-400',
-                                            bg: 'bg-yellow-50',
-                                            text: 'text-yellow-900',
-                                            reactionText: 'text-yellow-700',
-                                            badge: 'bg-yellow-500 text-white',
-                                        },
-                                        mild: {
-                                            border: 'border-green-400',
-                                            bg: 'bg-green-50',
-                                            text: 'text-green-900',
-                                            reactionText: 'text-green-700',
-                                            badge: 'bg-green-500 text-white',
-                                        },
+                                    // Color coding based on severity - theme-aware
+                                    const getSeverityColors = (severity: string) => {
+                                        const isDark = colorMode === 'dark';
+                                        const baseColors = {
+                                            'life-threatening': {
+                                                border: isDark ? 'border-red-400' : 'border-red-500',
+                                                bg: isDark ? 'bg-red-900/30' : 'bg-red-50',
+                                                text: isDark ? 'text-red-100' : 'text-red-900',
+                                                reactionText: isDark ? 'text-red-200' : 'text-red-700',
+                                                badge: isDark ? 'bg-red-600 text-white' : 'bg-red-600 text-white',
+                                            },
+                                            severe: {
+                                                border: isDark ? 'border-orange-400' : 'border-orange-400',
+                                                bg: isDark ? 'bg-orange-900/30' : 'bg-orange-50',
+                                                text: isDark ? 'text-orange-100' : 'text-orange-900',
+                                                reactionText: isDark ? 'text-orange-200' : 'text-orange-700',
+                                                badge: isDark ? 'bg-orange-500 text-white' : 'bg-orange-500 text-white',
+                                            },
+                                            moderate: {
+                                                border: isDark ? 'border-yellow-400' : 'border-yellow-400',
+                                                bg: isDark ? 'bg-yellow-900/30' : 'bg-yellow-50',
+                                                text: isDark ? 'text-yellow-100' : 'text-yellow-900',
+                                                reactionText: isDark ? 'text-yellow-200' : 'text-yellow-700',
+                                                badge: isDark ? 'bg-yellow-500 text-white' : 'bg-yellow-500 text-white',
+                                            },
+                                            mild: {
+                                                border: isDark ? 'border-green-400' : 'border-green-400',
+                                                bg: isDark ? 'bg-green-900/30' : 'bg-green-50',
+                                                text: isDark ? 'text-green-100' : 'text-green-900',
+                                                reactionText: isDark ? 'text-green-200' : 'text-green-700',
+                                                badge: isDark ? 'bg-green-500 text-white' : 'bg-green-500 text-white',
+                                            },
+                                        };
+                                        return baseColors[severity as keyof typeof baseColors] || baseColors.moderate;
                                     };
 
-                                    const colors = severityColors[allergy.severity as keyof typeof severityColors] || severityColors.moderate;
+                                    const severityColors = getSeverityColors(allergy.severity);
 
                                     return (
                                         <div
                                             key={allergy.id}
-                                            className={`rounded-lg border-2 ${colors.border} ${colors.bg} p-4 transition-all hover:shadow-md`}
+                                            className={`rounded-lg border-2 ${severityColors.border} ${severityColors.bg} p-4 transition-all hover:shadow-md`}
                                         >
                                             <div className="mb-2 flex items-center gap-2">
-                                                <h3 className={`font-semibold ${colors.text}`}>{allergy.name}</h3>
+                                                <h3 className={`font-semibold ${severityColors.text}`}>{allergy.name}</h3>
                                                 {allergy.isMedicine && (
-                                                    <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                                                    <span className={`inline-flex items-center rounded-full ${colorMode === 'dark' ? 'bg-blue-900/50 text-blue-200' : 'bg-blue-100 text-blue-700'} px-2 py-0.5 text-xs font-medium`}>
                                                         Medicine
                                                     </span>
                                                 )}
                                             </div>
                                             <div className="mb-2">
                                                 <span
-                                                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${colors.badge}`}
+                                                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${severityColors.badge}`}
                                                 >
                                                     {allergy.severity}
                                                 </span>
                                             </div>
                                             {allergy.reaction && (
-                                                <p className={`text-sm ${colors.reactionText}`}>
+                                                <p className={`text-sm ${severityColors.reactionText}`}>
                                                     <span className="font-medium">Reaction:</span> {allergy.reaction}
                                                 </p>
                                             )}
@@ -447,69 +501,79 @@ export default function PublicPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.25 }}
-                            className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+                            className={`mb-8 rounded-2xl border ${colors.cardBorder} ${colors.cardBackground} p-8 shadow-xl backdrop-blur-md`}
                         >
                             <div className="mb-6 flex items-center gap-3">
-                                <div className="rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 p-3 shadow-md">
-                                    <Stethoscope className="h-6 w-6 text-white" />
+                                <div 
+                                    className={`rounded-xl p-3 shadow-md ${
+                                        colorMode === 'neobrutalism' ? '' : `bg-gradient-to-br ${colors.iconBackground}`
+                                    }`}
+                                    style={colorMode === 'neobrutalism' ? { backgroundColor: colors._primaryColor } : undefined}
+                                >
+                                    <Stethoscope className={`h-6 w-6 ${colors.iconColor}`} />
                                 </div>
-                                <h2 className="text-2xl font-bold text-gray-900">Diagnoses & Conditions</h2>
+                                <h2 className={`text-2xl font-bold ${colors.headingText}`}>Diagnoses & Conditions</h2>
                             </div>
                             <div className="grid gap-4 md:grid-cols-2">
                                 {diagnoses.map((diagnosis) => {
-                                    const severityColors = {
-                                        critical: {
-                                            border: 'border-red-500',
-                                            bg: 'bg-red-50',
-                                            text: 'text-red-900',
-                                            badge: 'bg-red-600 text-white',
-                                        },
-                                        severe: {
-                                            border: 'border-orange-400',
-                                            bg: 'bg-orange-50',
-                                            text: 'text-orange-900',
-                                            badge: 'bg-orange-500 text-white',
-                                        },
-                                        moderate: {
-                                            border: 'border-yellow-400',
-                                            bg: 'bg-yellow-50',
-                                            text: 'text-yellow-900',
-                                            badge: 'bg-yellow-500 text-white',
-                                        },
-                                        mild: {
-                                            border: 'border-green-400',
-                                            bg: 'bg-green-50',
-                                            text: 'text-green-900',
-                                            badge: 'bg-green-500 text-white',
-                                        },
+                                    const getSeverityColors = (severity: string | null) => {
+                                        if (!severity) {
+                                            return {
+                                                border: colorMode === 'dark' ? 'border-gray-600' : 'border-gray-300',
+                                                bg: colorMode === 'dark' ? 'bg-gray-800/50' : 'bg-gray-50',
+                                                text: colorMode === 'dark' ? 'text-gray-200' : 'text-gray-900',
+                                                badge: 'bg-gray-500 text-white',
+                                            };
+                                        }
+                                        const isDark = colorMode === 'dark';
+                                        const baseColors = {
+                                            critical: {
+                                                border: isDark ? 'border-red-400' : 'border-red-500',
+                                                bg: isDark ? 'bg-red-900/30' : 'bg-red-50',
+                                                text: isDark ? 'text-red-100' : 'text-red-900',
+                                                badge: 'bg-red-600 text-white',
+                                            },
+                                            severe: {
+                                                border: isDark ? 'border-orange-400' : 'border-orange-400',
+                                                bg: isDark ? 'bg-orange-900/30' : 'bg-orange-50',
+                                                text: isDark ? 'text-orange-100' : 'text-orange-900',
+                                                badge: 'bg-orange-500 text-white',
+                                            },
+                                            moderate: {
+                                                border: isDark ? 'border-yellow-400' : 'border-yellow-400',
+                                                bg: isDark ? 'bg-yellow-900/30' : 'bg-yellow-50',
+                                                text: isDark ? 'text-yellow-100' : 'text-yellow-900',
+                                                badge: 'bg-yellow-500 text-white',
+                                            },
+                                            mild: {
+                                                border: isDark ? 'border-green-400' : 'border-green-400',
+                                                bg: isDark ? 'bg-green-900/30' : 'bg-green-50',
+                                                text: isDark ? 'text-green-100' : 'text-green-900',
+                                                badge: 'bg-green-500 text-white',
+                                            },
+                                        };
+                                        return baseColors[severity as keyof typeof baseColors] || baseColors.moderate;
                                     };
 
-                                    const colors = diagnosis.severity
-                                        ? severityColors[diagnosis.severity as keyof typeof severityColors] || severityColors.moderate
-                                        : {
-                                              border: 'border-gray-300',
-                                              bg: 'bg-gray-50',
-                                              text: 'text-gray-900',
-                                              badge: 'bg-gray-500 text-white',
-                                          };
+                                    const severityColors = getSeverityColors(diagnosis.severity);
 
                                     return (
                                         <div
                                             key={diagnosis.id}
-                                            className={`rounded-lg border-2 ${colors.border} ${colors.bg} p-4 transition-all hover:shadow-md`}
+                                            className={`rounded-lg border-2 ${severityColors.border} ${severityColors.bg} p-4 transition-all hover:shadow-md`}
                                         >
                                             <div className="mb-2 flex items-center gap-2">
-                                                <h3 className={`font-semibold ${colors.text}`}>{diagnosis.name}</h3>
+                                                <h3 className={`font-semibold ${severityColors.text}`}>{diagnosis.name}</h3>
                                                 {diagnosis.severity && (
                                                     <span
-                                                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${colors.badge}`}
+                                                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${severityColors.badge}`}
                                                     >
                                                         {diagnosis.severity}
                                                     </span>
                                                 )}
                                             </div>
                                             {diagnosis.diagnosisDate && (
-                                                <p className={`mb-2 text-sm ${colors.text}`}>
+                                                <p className={`mb-2 text-sm ${severityColors.text}`}>
                                                     <span className="font-medium">Diagnosed:</span>{' '}
                                                     {new Date(diagnosis.diagnosisDate).toLocaleDateString('en-US', { 
                                                         month: 'long', 
@@ -519,7 +583,7 @@ export default function PublicPage() {
                                                 </p>
                                             )}
                                             {diagnosis.description && (
-                                                <p className={`text-sm ${colors.text} opacity-90`}>{diagnosis.description}</p>
+                                                <p className={`text-sm ${severityColors.text} opacity-90`}>{diagnosis.description}</p>
                                             )}
                                         </div>
                                     );
@@ -534,31 +598,40 @@ export default function PublicPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
-                            className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+                            className={`mb-8 rounded-2xl border ${colors.cardBorder} ${colors.cardBackground} p-8 shadow-xl backdrop-blur-md`}
                         >
                             <div className="mb-6 flex items-center gap-3">
-                                <div className="rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 p-3 shadow-md">
-                                    <Heart className="h-6 w-6 text-white" fill="white" />
+                                <div 
+                                    className={`rounded-xl p-3 shadow-md ${
+                                        colorMode === 'neobrutalism' ? '' : `bg-gradient-to-br ${colors.iconBackground}`
+                                    }`}
+                                    style={colorMode === 'neobrutalism' ? { backgroundColor: colors._primaryColor } : undefined}
+                                >
+                                    <Heart className={`h-6 w-6 ${colors.iconColor}`} fill="currentColor" />
                                 </div>
-                                <h2 className="text-2xl font-bold text-gray-900">Emergency Contacts</h2>
+                                <h2 className={`text-2xl font-bold ${colors.headingText}`}>Emergency Contacts</h2>
                             </div>
                             <div className="grid gap-4 md:grid-cols-2">
                                 {contacts.map((contact) => (
                                     <div
                                         key={contact.id}
-                                        className="rounded-lg border-2 border-gray-200 bg-white p-4 transition-all hover:border-purple-300 hover:shadow-md"
+                                        className={`rounded-lg border-2 ${colors.cardBorder} ${colors.cardBackground} p-4 transition-all hover:shadow-md`}
                                     >
-                                        <h3 className="mb-2 font-semibold text-gray-900">{contact.name}</h3>
+                                        <h3 className={`mb-2 font-semibold ${colors.headingText}`}>{contact.name}</h3>
                                         {contact.relation && (
-                                            <p className="mb-2 text-sm text-gray-600">
+                                            <p className={`mb-2 text-sm ${colors.secondaryText}`}>
                                                 <span className="font-medium">Relation:</span> {contact.relation}
                                             </p>
                                         )}
-                                        <div className="space-y-1 text-sm text-gray-600">
+                                        <div className={`space-y-1 text-sm ${colors.secondaryText}`}>
                                             {contact.phone && (
                                                 <div className="flex items-center gap-2">
                                                     <Phone className="h-4 w-4" />
-                                                    <a href={`tel:${contact.phone}`} className="hover:text-purple-600">
+                                                    <a 
+                                                        href={`tel:${contact.phone}`} 
+                                                        className={colorMode === 'neobrutalism' ? 'hover:underline' : colors.linkHover}
+                                                        style={colorMode === 'neobrutalism' ? { color: colors._primaryColor } : undefined}
+                                                    >
                                                         {contact.phone}
                                                     </a>
                                                 </div>
@@ -566,7 +639,11 @@ export default function PublicPage() {
                                             {contact.email && (
                                                 <div className="flex items-center gap-2">
                                                     <Mail className="h-4 w-4" />
-                                                    <a href={`mailto:${contact.email}`} className="hover:text-purple-600">
+                                                    <a 
+                                                        href={`mailto:${contact.email}`} 
+                                                        className={colorMode === 'neobrutalism' ? 'hover:underline' : colors.linkHover}
+                                                        style={colorMode === 'neobrutalism' ? { color: colors._primaryColor } : undefined}
+                                                    >
                                                         {contact.email}
                                                     </a>
                                                 </div>
@@ -584,21 +661,21 @@ export default function PublicPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
-                            className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+                            className={`mb-8 rounded-2xl border ${colors.cardBorder} ${colors.cardBackground} p-8 shadow-xl backdrop-blur-md`}
                         >
                             <div className="mb-6 flex items-center gap-3">
-                                <div className="rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 p-3 shadow-md">
-                                    <QrCode className="h-6 w-6 text-white" />
+                                <div className={`rounded-xl bg-gradient-to-br ${colors.iconBackground} p-3 shadow-md`}>
+                                    <QrCode className={`h-6 w-6 ${colors.iconColor}`} />
                                 </div>
-                                <h2 className="text-2xl font-bold text-gray-900">Share This Page</h2>
+                                <h2 className={`text-2xl font-bold ${colors.headingText}`}>Share This Page</h2>
                             </div>
                             <div className="flex flex-col items-center gap-6 md:flex-row md:items-start md:justify-center">
-                                <div className="rounded-lg border-2 border-gray-200 bg-white p-4">
+                                    <div className={`rounded-lg border-2 ${colors.cardBorder} ${colors.cardBackground} p-4`}>
                                     <QRCodeDisplay url={`${typeof window !== 'undefined' ? window.location.origin : ''}/u/${page.uniqueKey}`} size={200} />
                                 </div>
                                 <div className="text-center md:text-left">
-                                    <p className="mb-4 text-gray-600">Scan this QR code to quickly access this medical information page on any device.</p>
-                                    <p className="text-sm text-gray-500">
+                                    <p className={`mb-4 ${colors.secondaryText}`}>Scan this QR code to quickly access this medical information page on any device.</p>
+                                    <p className={`text-sm ${colors.secondaryText} opacity-80`}>
                                         Share this QR code with healthcare providers, family members, or keep it for emergency access.
                                     </p>
                                 </div>
@@ -611,9 +688,9 @@ export default function PublicPage() {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="rounded-2xl border border-gray-200 bg-white/80 p-8 text-center shadow-xl backdrop-blur-md"
+                            className={`rounded-2xl border ${colors.cardBorder} ${colors.cardBackground} p-8 text-center shadow-xl backdrop-blur-md`}
                         >
-                            <p className="text-gray-600">No medical information available yet.</p>
+                            <p className={colors.secondaryText}>No medical information available yet.</p>
                         </motion.div>
                     )}
                 </div>

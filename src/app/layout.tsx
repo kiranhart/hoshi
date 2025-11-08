@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import './globals.css';
+import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
@@ -14,10 +15,31 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
+            <head>
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            (function() {
+                                try {
+                                    const theme = localStorage.getItem('medilink-theme') || 'light';
+                                    const html = document.documentElement;
+                                    if (theme === 'dark') {
+                                        html.classList.add('dark');
+                                    } else {
+                                        html.classList.remove('dark');
+                                    }
+                                } catch (e) {}
+                            })();
+                        `,
+                    }}
+                />
+            </head>
             <body>
-                {children}
-                <Toaster position="top-right" richColors />
+                <ThemeProvider attribute="class" defaultTheme="light" storageKey="medilink-theme">
+                    {children}
+                    <Toaster position="top-right" richColors />
+                </ThemeProvider>
             </body>
         </html>
     );

@@ -18,7 +18,7 @@ export default function Home() {
     };
 
     return (
-        <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white text-gray-900">
+        <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
             {/* Animated Gradient Background */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
                 <motion.div
@@ -130,7 +130,7 @@ export default function Home() {
 
                 {/* Subtitle */}
                 <motion.p
-                    className="mx-auto mb-12 max-w-2xl text-xl text-gray-600 md:text-2xl"
+                    className="mx-auto mb-12 max-w-2xl text-xl text-gray-600 dark:text-gray-300 md:text-2xl"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.8, delay: 0.4 }}
@@ -153,7 +153,7 @@ export default function Home() {
                             placeholder="Search for a username..."
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="w-full rounded-full border-2 border-gray-200 bg-white px-12 py-4 text-gray-900 placeholder-gray-400 shadow-sm transition-all focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none"
+                            className="w-full rounded-full border-2 border-gray-200 bg-white px-12 py-4 text-gray-900 placeholder-gray-400 shadow-sm transition-all focus:border-rose-400 focus:ring-2 focus:ring-rose-400/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-rose-500"
                         />
                     </div>
                     <button
@@ -178,7 +178,7 @@ export default function Home() {
                         </button>
                     </Link>
                     <Link href="/sign-in">
-                        <button className="cursor-pointer rounded-full border-2 border-gray-300 bg-white px-8 py-4 font-semibold text-gray-700 shadow-sm transition-all hover:scale-105 hover:border-gray-400 hover:bg-gray-50 active:scale-95">
+                        <button className="cursor-pointer rounded-full border-2 border-gray-300 bg-white px-8 py-4 font-semibold text-gray-700 shadow-sm transition-all hover:scale-105 hover:border-gray-400 hover:bg-gray-50 active:scale-95 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-700">
                             Sign In
                         </button>
                     </Link>
@@ -225,18 +225,18 @@ export default function Home() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6, delay: i * 0.1 }}
-                        className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:scale-105"
+                        className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:scale-105 dark:border-gray-700 dark:bg-gray-800"
                     >
                         <div
-                            className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 transition-opacity duration-200 group-hover:opacity-5`}
+                            className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 transition-opacity duration-200 group-hover:opacity-5 dark:group-hover:opacity-10`}
                         />
-                        <div className="absolute inset-0 rounded-2xl border border-gray-200 transition-colors duration-200 group-hover:border-gray-300" />
+                        <div className="absolute inset-0 rounded-2xl border border-gray-200 transition-colors duration-200 group-hover:border-gray-300 dark:border-gray-700 dark:group-hover:border-gray-600" />
                         <div className="relative">
                             <div className={`mb-4 inline-flex rounded-xl bg-gradient-to-br ${feature.gradient} p-3 shadow-md`}>
                                 <feature.icon className="h-6 w-6 text-white" />
                             </div>
-                            <h3 className="mb-2 text-xl font-bold text-gray-900">{feature.title}</h3>
-                            <p className="text-sm text-gray-600">{feature.desc}</p>
+                            <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-gray-100">{feature.title}</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-300">{feature.desc}</p>
                         </div>
                     </motion.div>
                 ))}
@@ -247,10 +247,10 @@ export default function Home() {
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                className="relative z-10 mt-32 mb-10 text-center text-sm text-gray-500"
+                className="relative z-10 mt-32 mb-10 text-center text-sm text-gray-500 dark:text-gray-400"
             >
                 <p>
-                    Made with <span className="text-pink-500">❤️</span> for better healthcare • © {new Date().getFullYear()} Medi Link
+                    Made with <span className="text-pink-500 dark:text-pink-400">❤️</span> for better healthcare • © {new Date().getFullYear()} Medi Link
                 </p>
             </motion.footer>
         </main>

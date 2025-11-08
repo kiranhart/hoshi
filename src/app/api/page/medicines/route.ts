@@ -1,7 +1,7 @@
 import { auth } from '@/lib/auth';
 import db from '@/db';
 import { page, medicine } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, asc, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 
@@ -20,7 +20,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ medicines: [] });
     }
 
-    const medicines = await db.select().from(medicine).where(eq(medicine.pageId, pageData[0].id));
+    const medicines = await db.select().from(medicine)
+      .where(eq(medicine.pageId, pageData[0].id))
+      .orderBy(asc(medicine.displayOrder), asc(medicine.createdAt));
     return NextResponse.json({ medicines });
   } catch (error) {
     console.error('Error fetching medicines:', error);
@@ -50,6 +52,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Page not found. Please set up your page first.' }, { status: 404 });
     }
 
+    // Get the max display order to add new item at the end
+    const maxOrderResult = await db
+      .select({ maxOrder: sql<number>`MAX(${medicine.displayOrder})` })
+      .from(medicine)
+      .where(eq(medicine.pageId, pageData[0].id))
+      .limit(1);
+
+    const nextOrder = (maxOrderResult[0]?.maxOrder ?? -1) + 1;
+
     const medicineId = randomUUID();
     await db.insert(medicine).values({
       id: medicineId,
@@ -57,6 +68,7 @@ export async function POST(req: NextRequest) {
       name: name.trim(),
       dosage: dosage?.trim() || null,
       frequency: frequency?.trim() || null,
+      displayOrder: nextOrder,
     });
 
     const created = await db.select().from(medicine).where(eq(medicine.id, medicineId)).limit(1);
