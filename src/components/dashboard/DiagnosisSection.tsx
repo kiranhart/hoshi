@@ -6,15 +6,7 @@ import { Check, Edit2, GripVertical, Loader2, Plus, Stethoscope, Trash2, X } fro
 import { Button } from '@/components/ui/button';
 import { AutocompleteInput } from './AutocompleteInput';
 import { COMMON_DIAGNOSES } from '@/lib/medical-data';
-
-interface Diagnosis {
-    id: string;
-    name: string;
-    severity: string | null;
-    diagnosisDate: string | null;
-    description: string | null;
-    displayOrder: number;
-}
+import { type Diagnosis } from '@/lib/types';
 
 interface DiagnosisSectionProps {
     diagnoses: Diagnosis[];

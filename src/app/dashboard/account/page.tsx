@@ -13,8 +13,7 @@ import { ProfilePictureUpload } from '@/components/dashboard/ProfilePictureUploa
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { authClient } from '@/lib/auth-client';
-
-type SubscriptionTier = 'free' | 'basic' | 'pro' | 'premium' | null;
+import { SUBSCRIPTION_TIERS, type SubscriptionTier } from '@/lib/constants';
 
 export default function AccountSettingsPage() {
     const { data: session, isPending } = authClient.useSession();
@@ -92,38 +91,11 @@ export default function AccountSettingsPage() {
         return null;
     }
 
-    const subscriptionTiers = [
-        {
-            id: 'basic' as const,
-            name: 'Basic',
-            price: '$4.99',
-            period: 'month',
-            features: ['Private profiles', 'Custom branding', 'Priority support', 'Basic analytics'],
-            icon: Zap,
-            color: 'from-teal-400 to-cyan-500',
-            popular: false,
-        },
-        {
-            id: 'pro' as const,
-            name: 'Pro',
-            price: '$9.99',
-            period: 'month',
-            features: ['Everything in Basic', 'Advanced analytics', 'Multiple profiles', 'API access', 'Custom domains'],
-            icon: Sparkles,
-            color: 'from-cyan-400 to-blue-500',
-            popular: true,
-        },
-        {
-            id: 'premium' as const,
-            name: 'Premium',
-            price: '$19.99',
-            period: 'month',
-            features: ['Everything in Pro', 'White-label solution', 'Dedicated support', 'Custom integrations', 'Team management'],
-            icon: Building2,
-            color: 'from-blue-500 to-indigo-600',
-            popular: false,
-        },
-    ];
+    const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+        Zap,
+        Sparkles,
+        Building2,
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-cyan-50/30">
@@ -219,8 +191,8 @@ export default function AccountSettingsPage() {
                                 <CardDescription>Choose the plan that's right for you</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                {subscriptionTiers.map((tier) => {
-                                    const Icon = tier.icon;
+                                {SUBSCRIPTION_TIERS.map((tier) => {
+                                    const Icon = iconMap[tier.iconName] || Zap;
                                     const isCurrentTier = subscriptionTier === tier.id;
                                     const isUpgrade =
                                         subscriptionTier === 'free' ||

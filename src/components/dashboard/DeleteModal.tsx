@@ -3,10 +3,11 @@
 import { motion } from 'framer-motion';
 import { Loader2, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { type EntityType } from '@/lib/types';
 
 interface DeleteModalProps {
     isOpen: boolean;
-    type: 'medicine' | 'allergy' | 'diagnosis' | 'contact' | null;
+    type: EntityType | null;
     name: string;
     isDeleting: boolean;
     onClose: () => void;

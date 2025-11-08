@@ -8,6 +8,7 @@ import { useQRCode } from 'next-qrcode';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
+import { downloadQRCode, printQRCode } from '@/lib/qr-code-utils';
 
 interface QRCodeSectionProps {
     uniqueKey: string;
@@ -50,162 +51,33 @@ export function QRCodeSection({ uniqueKey, pageUrl }: QRCodeSectionProps) {
         }
     };
 
-    const handlePrintQR = () => {
+    const handlePrintQR = async () => {
         setIsPrinting(true);
-        const printWindow = window.open('', '_blank');
-        if (!printWindow) {
-            toast.error('Please allow popups to print the QR code');
-            setIsPrinting(false);
-            return;
-        }
-
-        // Get the SVG element from the QR code container
-        const svg = qrContainerRef.current?.querySelector('svg');
-        if (!svg) {
-            toast.error('QR code not found');
-            setIsPrinting(false);
-            return;
-        }
-
-        // Clone the SVG and serialize it
-        const svgClone = svg.cloneNode(true) as SVGElement;
-        const svgData = new XMLSerializer().serializeToString(svgClone);
-        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-        const svgUrl = URL.createObjectURL(svgBlob);
-
-        // Convert SVG to image for printing
-        const img = new Image();
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = 300;
-            canvas.height = 300;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-                ctx.drawImage(img, 0, 0, 300, 300);
-                const imgDataUrl = canvas.toDataURL('image/png');
-
-                printWindow.document.write(`
-                    <!DOCTYPE html>
-                    <html>
-                        <head>
-                            <title>QR Code - Medical Information</title>
-                            <style>
-                                @media print {
-                                    body {
-                                        margin: 0;
-                                        padding: 20px;
-                                    }
-                                }
-                                body {
-                                    display: flex;
-                                    flex-direction: column;
-                                    align-items: center;
-                                    justify-content: center;
-                                    min-height: 100vh;
-                                    margin: 0;
-                                    font-family: Arial, sans-serif;
-                                    padding: 20px;
-                                }
-                                h1 {
-                                    margin-bottom: 20px;
-                                    color: #333;
-                                }
-                                .qr-container {
-                                    display: flex;
-                                    flex-direction: column;
-                                    align-items: center;
-                                    gap: 20px;
-                                }
-                                img {
-                                    border: 2px solid #000;
-                                    padding: 10px;
-                                    background: white;
-                                }
-                                .url {
-                                    font-size: 14px;
-                                    color: #666;
-                                    word-break: break-all;
-                                    text-align: center;
-                                    max-width: 400px;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <div class="qr-container">
-                                <h1>Medical Information QR Code</h1>
-                                <img src="${imgDataUrl}" alt="QR Code" width="300" height="300" />
-                                <div class="url">${qrUrl}</div>
-                            </div>
-                            <script>
-                                window.onload = function() {
-                                    setTimeout(() => {
-                                        window.print();
-                                        window.onafterprint = () => window.close();
-                                    }, 250);
-                                };
-                            </script>
-                        </body>
-                    </html>
-                `);
-                printWindow.document.close();
-                URL.revokeObjectURL(svgUrl);
-                setIsPrinting(false);
-            }
-        };
-        img.src = svgUrl;
-    };
-
-    const handleDownloadQR = async () => {
         try {
-            // Get the SVG element from the QR code container
             const svg = qrContainerRef.current?.querySelector('svg');
             if (!svg) {
                 toast.error('QR code not found');
                 return;
             }
-
-            // Clone the SVG and serialize it
-            const svgClone = svg.cloneNode(true) as SVGElement;
-            const svgData = new XMLSerializer().serializeToString(svgClone);
-            const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-            const svgUrl = URL.createObjectURL(svgBlob);
-
-            // Convert SVG to PNG for download
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = 300;
-                canvas.height = 300;
-                const ctx = canvas.getContext('2d');
-                if (ctx) {
-                    ctx.drawImage(img, 0, 0, 300, 300);
-                    canvas.toBlob((blob) => {
-                        if (!blob) {
-                            toast.error('Failed to generate QR code image');
-                            URL.revokeObjectURL(svgUrl);
-                            return;
-                        }
-                        const url = window.URL.createObjectURL(blob);
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = 'medical-info-qr-code.png';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        window.URL.revokeObjectURL(url);
-                        URL.revokeObjectURL(svgUrl);
-                        toast.success('QR code downloaded!');
-                    }, 'image/png');
-                }
-            };
-            img.onerror = () => {
-                toast.error('Failed to convert QR code to image');
-                URL.revokeObjectURL(svgUrl);
-            };
-            img.src = svgUrl;
+            await printQRCode(svg, { qrUrl, title: 'Medical Information' });
         } catch (error) {
-            console.error('Error downloading QR code:', error);
-            toast.error('Failed to download QR code');
+            toast.error(error instanceof Error ? error.message : 'Failed to print QR code');
+        } finally {
+            setIsPrinting(false);
+        }
+    };
+
+    const handleDownloadQR = async () => {
+        try {
+            const svg = qrContainerRef.current?.querySelector('svg');
+            if (!svg) {
+                toast.error('QR code not found');
+                return;
+            }
+            await downloadQRCode(svg, 'medical-info-qr-code.png');
+            toast.success('QR code downloaded!');
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : 'Failed to download QR code');
         }
     };
 

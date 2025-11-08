@@ -5,14 +5,7 @@ import { AlertTriangle, Check, Edit2, Loader2, Plus, Trash2, X } from 'lucide-re
 import { Button } from '@/components/ui/button';
 import { AutocompleteInput } from './AutocompleteInput';
 import { COMMON_ALLERGIES } from '@/lib/medical-data';
-
-interface Allergy {
-    id: string;
-    name: string;
-    reaction: string | null;
-    severity: string;
-    isMedicine: boolean;
-}
+import { type Allergy } from '@/lib/types';
 
 interface AllergiesSectionProps {
     allergies: Allergy[];

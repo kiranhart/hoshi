@@ -3,14 +3,7 @@
 import { motion } from 'framer-motion';
 import { Check, Edit2, Loader2, Phone, Plus, Trash2, User, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-interface EmergencyContact {
-    id: string;
-    name: string;
-    phone: string | null;
-    email: string | null;
-    relation: string | null;
-}
+import { type EmergencyContact } from '@/lib/types';
 
 interface EmergencyContactsSectionProps {
     contacts: EmergencyContact[];

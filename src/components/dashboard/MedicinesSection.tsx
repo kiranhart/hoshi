@@ -6,13 +6,7 @@ import { Check, Edit2, Loader2, Pill, Plus, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AutocompleteInput } from './AutocompleteInput';
 import { COMMON_MEDICINES } from '@/lib/medical-data';
-
-interface Medicine {
-    id: string;
-    name: string;
-    dosage: string | null;
-    frequency: string | null;
-}
+import { type Medicine } from '@/lib/types';
 
 interface MedicinesSectionProps {
     medicines: Medicine[];
