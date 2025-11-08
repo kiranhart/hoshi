@@ -8,8 +8,10 @@ import { Activity, Heart, Pill, Stethoscope, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { AllergiesSection } from '@/components/dashboard/AllergiesSection';
+import { CommandPalette } from '@/components/dashboard/CommandPalette';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { DeleteModal } from '@/components/dashboard/DeleteModal';
+import { DiagnosisSection } from '@/components/dashboard/DiagnosisSection';
 import { EmergencyContactsSection } from '@/components/dashboard/EmergencyContactsSection';
 import { MedicinesSection } from '@/components/dashboard/MedicinesSection';
 import { PageInformationSection } from '@/components/dashboard/PageInformationSection';
@@ -60,6 +62,14 @@ export default function DashboardPage() {
     });
     const [newAllergy, setNewAllergy] = useState({ name: '', reaction: '', severity: 'mild', isMedicine: false });
 
+    // Diagnoses state
+    const [diagnoses, setDiagnoses] = useState<any[]>([]);
+    const [isLoadingDiagnoses, setIsLoadingDiagnoses] = useState(false);
+    const [isAddingDiagnosis, setIsAddingDiagnosis] = useState(false);
+    const [editingDiagnosis, setEditingDiagnosis] = useState<string | null>(null);
+    const [editingDiagnosisData, setEditingDiagnosisData] = useState<{ name: string; severity: string; diagnosisDate: string; description: string } | null>(null);
+    const [newDiagnosis, setNewDiagnosis] = useState({ name: '', severity: '', diagnosisDate: '', description: '' });
+
     // Emergency contacts state
     const [contacts, setContacts] = useState<any[]>([]);
     const [isLoadingContacts, setIsLoadingContacts] = useState(false);
@@ -71,7 +81,7 @@ export default function DashboardPage() {
     // Delete confirmation modal state
     const [deleteModal, setDeleteModal] = useState<{
         isOpen: boolean;
-        type: 'medicine' | 'allergy' | 'contact' | null;
+        type: 'medicine' | 'allergy' | 'diagnosis' | 'contact' | null;
         id: string | null;
         name: string;
         isDeleting: boolean;
@@ -83,10 +93,16 @@ export default function DashboardPage() {
         isDeleting: false,
     });
 
+    // Command palette state
+    const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+    const [isCommandPaletteAdding, setIsCommandPaletteAdding] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+
     // Check username and load page data on mount
     useEffect(() => {
         if (session?.user?.id) {
             checkUsername();
+            checkAdminStatus();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session]);
@@ -97,10 +113,25 @@ export default function DashboardPage() {
             loadPageData();
             loadMedicines();
             loadAllergies();
+            loadDiagnoses();
             loadContacts();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [hasUsername]);
+
+    // Keyboard shortcut handler for command palette
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Cmd+K (Mac) or Ctrl+K (Windows/Linux)
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                setIsCommandPaletteOpen((prev) => !prev);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     const checkUsername = async () => {
         try {
@@ -118,6 +149,16 @@ export default function DashboardPage() {
             setHasUsername(false);
         } finally {
             setIsCheckingUsername(false);
+        }
+    };
+
+    const checkAdminStatus = async () => {
+        try {
+            // Try to fetch admin stats to check if user is admin
+            const response = await fetch('/api/admin/stats');
+            setIsAdmin(response.status !== 403);
+        } catch (error) {
+            setIsAdmin(false);
         }
     };
 
@@ -418,6 +459,145 @@ export default function DashboardPage() {
         }
     };
 
+    // Diagnoses functions
+    const loadDiagnoses = async () => {
+        try {
+            setIsLoadingDiagnoses(true);
+            const response = await fetch('/api/page/diagnoses');
+            if (response.ok) {
+                const data = await response.json();
+                setDiagnoses(data.diagnoses || []);
+            }
+        } catch (error) {
+            console.error('Error loading diagnoses:', error);
+        } finally {
+            setIsLoadingDiagnoses(false);
+        }
+    };
+
+    const addDiagnosis = async () => {
+        if (!newDiagnosis.name.trim() || isAddingDiagnosis) return;
+        try {
+            setIsAddingDiagnosis(true);
+            const response = await fetch('/api/page/diagnoses', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newDiagnosis),
+            });
+            if (response.ok) {
+                setNewDiagnosis({ name: '', severity: '', diagnosisDate: '', description: '' });
+                await loadDiagnoses();
+                toast.success('Diagnosis added successfully!', {
+                    description: `${newDiagnosis.name} has been added to your list.`,
+                });
+            } else {
+                toast.error('Failed to add diagnosis', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error adding diagnosis:', error);
+            toast.error('Error adding diagnosis', {
+                description: 'An unexpected error occurred.',
+            });
+        } finally {
+            setIsAddingDiagnosis(false);
+        }
+    };
+
+    const updateDiagnosis = async (id: string, diagnosisData: { name: string; severity: string; diagnosisDate: string; description: string }) => {
+        try {
+            const response = await fetch(`/api/page/diagnoses/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(diagnosisData),
+            });
+            if (response.ok) {
+                setEditingDiagnosis(null);
+                setEditingDiagnosisData(null);
+                loadDiagnoses();
+                toast.success('Diagnosis updated successfully!', {
+                    description: `${diagnosisData.name} has been updated.`,
+                });
+            } else {
+                toast.error('Failed to update diagnosis', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error updating diagnosis:', error);
+            toast.error('Error updating diagnosis', {
+                description: 'An unexpected error occurred.',
+            });
+        }
+    };
+
+    const deleteDiagnosis = async (id: string, name: string) => {
+        setDeleteModal({
+            isOpen: true,
+            type: 'diagnosis',
+            id,
+            name,
+            isDeleting: false,
+        });
+    };
+
+    const confirmDeleteDiagnosis = async () => {
+        if (!deleteModal.id) return;
+        try {
+            setDeleteModal((prev) => ({ ...prev, isDeleting: true }));
+            const response = await fetch(`/api/page/diagnoses/${deleteModal.id}`, { method: 'DELETE' });
+            if (response.ok) {
+                loadDiagnoses();
+                setDeleteModal({ isOpen: false, type: null, id: null, name: '', isDeleting: false });
+                toast.success('Diagnosis deleted successfully!', {
+                    description: `${deleteModal.name} has been removed from your list.`,
+                });
+            } else {
+                setDeleteModal((prev) => ({ ...prev, isDeleting: false }));
+                toast.error('Failed to delete diagnosis', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error deleting diagnosis:', error);
+            setDeleteModal((prev) => ({ ...prev, isDeleting: false }));
+            toast.error('Error deleting diagnosis', {
+                description: 'An unexpected error occurred.',
+            });
+        }
+    };
+
+    const reorderDiagnoses = async (diagnosisIds: string[], optimisticOrder: any[]) => {
+        try {
+            // Optimistically update the state immediately
+            setDiagnoses(optimisticOrder);
+
+            const response = await fetch('/api/page/diagnoses/reorder', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ diagnosisIds }),
+            });
+            
+            if (response.ok) {
+                // Reload to get the latest data from server
+                await loadDiagnoses();
+            } else {
+                // Revert on error
+                await loadDiagnoses();
+                throw new Error('Failed to reorder diagnoses');
+            }
+        } catch (error) {
+            console.error('Error reordering diagnoses:', error);
+            // Reload to revert to server state
+            await loadDiagnoses();
+            toast.error('Failed to reorder diagnoses', {
+                description: 'The order has been reverted. Please try again.',
+            });
+            throw error; // Re-throw so component can handle it
+        }
+    };
+
     // Emergency contacts functions
     const loadContacts = async () => {
         try {
@@ -531,6 +711,8 @@ export default function DashboardPage() {
             await confirmDeleteMedicine();
         } else if (deleteModal.type === 'allergy') {
             await confirmDeleteAllergy();
+        } else if (deleteModal.type === 'diagnosis') {
+            await confirmDeleteDiagnosis();
         } else if (deleteModal.type === 'contact') {
             await confirmDeleteContact();
         }
@@ -539,6 +721,101 @@ export default function DashboardPage() {
     const handleSignOut = async () => {
         await authClient.signOut();
         router.push('/');
+    };
+
+    // Command palette handlers
+    const handleCommandPaletteAddMedicine = async (data: { name: string; dosage: string; frequency: string }) => {
+        setIsCommandPaletteAdding(true);
+        try {
+            const response = await fetch('/api/page/medicines', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+            if (response.ok) {
+                await loadMedicines();
+                toast.success('Medicine added successfully!', {
+                    description: `${data.name} has been added to your list.`,
+                });
+            } else {
+                toast.error('Failed to add medicine', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error adding medicine:', error);
+            toast.error('Error adding medicine', {
+                description: 'An unexpected error occurred.',
+            });
+        } finally {
+            setIsCommandPaletteAdding(false);
+        }
+    };
+
+    const handleCommandPaletteAddAllergy = async (data: {
+        name: string;
+        reaction: string;
+        severity: string;
+        isMedicine: boolean;
+    }) => {
+        setIsCommandPaletteAdding(true);
+        try {
+            const response = await fetch('/api/page/allergies', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+            if (response.ok) {
+                await loadAllergies();
+                toast.success('Allergy added successfully!', {
+                    description: `${data.name} has been added to your list.`,
+                });
+            } else {
+                toast.error('Failed to add allergy', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error adding allergy:', error);
+            toast.error('Error adding allergy', {
+                description: 'An unexpected error occurred.',
+            });
+        } finally {
+            setIsCommandPaletteAdding(false);
+        }
+    };
+
+    const handleCommandPaletteAddDiagnosis = async (data: {
+        name: string;
+        severity: string;
+        diagnosisDate: string;
+        description: string;
+    }) => {
+        setIsCommandPaletteAdding(true);
+        try {
+            const response = await fetch('/api/page/diagnoses', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+            if (response.ok) {
+                await loadDiagnoses();
+                toast.success('Diagnosis added successfully!', {
+                    description: `${data.name} has been added to your list.`,
+                });
+            } else {
+                toast.error('Failed to add diagnosis', {
+                    description: 'Please try again.',
+                });
+            }
+        } catch (error) {
+            console.error('Error adding diagnosis:', error);
+            toast.error('Error adding diagnosis', {
+                description: 'An unexpected error occurred.',
+            });
+        } finally {
+            setIsCommandPaletteAdding(false);
+        }
     };
 
     if (isPending || isCheckingUsername) {
@@ -781,6 +1058,8 @@ export default function DashboardPage() {
                     userEmail={session.user.email || ''}
                     userImage={session.user.image || null}
                     onSignOut={handleSignOut}
+                    subscriptionTier="free"
+                    isAdmin={isAdmin}
                 />
 
                 {/* Main Content */}
@@ -818,55 +1097,84 @@ export default function DashboardPage() {
                                 onSave={savePageData}
                             />
 
-                            <MedicinesSection
-                                medicines={medicines}
-                                newMedicine={newMedicine}
-                                editingMedicine={editingMedicine}
-                                editingMedicineData={editingMedicineData}
-                                isAddingMedicine={isAddingMedicine}
-                                onNewMedicineChange={(field, value) => setNewMedicine({ ...newMedicine, [field]: value })}
-                                onAddMedicine={addMedicine}
-                                onEditStart={(medicine) => {
-                                    setEditingMedicine(medicine.id);
-                                    setEditingMedicineData({
-                                        name: medicine.name,
-                                        dosage: medicine.dosage || '',
-                                        frequency: medicine.frequency || '',
-                                    });
-                                }}
-                                onEditCancel={() => {
-                                    setEditingMedicine(null);
-                                    setEditingMedicineData(null);
-                                }}
-                                onEditChange={(field, value) => setEditingMedicineData({ ...editingMedicineData!, [field]: value })}
-                                onEditSave={(id) => updateMedicine(id, editingMedicineData!)}
-                                onDelete={deleteMedicine}
-                            />
+                            <div className="grid gap-8 lg:grid-cols-2">
+                                <MedicinesSection
+                                    medicines={medicines}
+                                    newMedicine={newMedicine}
+                                    editingMedicine={editingMedicine}
+                                    editingMedicineData={editingMedicineData}
+                                    isAddingMedicine={isAddingMedicine}
+                                    onNewMedicineChange={(field, value) => setNewMedicine({ ...newMedicine, [field]: value })}
+                                    onAddMedicine={addMedicine}
+                                    onEditStart={(medicine) => {
+                                        setEditingMedicine(medicine.id);
+                                        setEditingMedicineData({
+                                            name: medicine.name,
+                                            dosage: medicine.dosage || '',
+                                            frequency: medicine.frequency || '',
+                                        });
+                                    }}
+                                    onEditCancel={() => {
+                                        setEditingMedicine(null);
+                                        setEditingMedicineData(null);
+                                    }}
+                                    onEditChange={(field, value) => setEditingMedicineData({ ...editingMedicineData!, [field]: value })}
+                                    onEditSave={(id) => updateMedicine(id, editingMedicineData!)}
+                                    onDelete={deleteMedicine}
+                                />
 
-                            <AllergiesSection
-                                allergies={allergies}
-                                newAllergy={newAllergy}
-                                editingAllergy={editingAllergy}
-                                editingAllergyData={editingAllergyData}
-                                isAddingAllergy={isAddingAllergy}
-                                onNewAllergyChange={(field, value) => setNewAllergy({ ...newAllergy, [field]: value } as any)}
-                                onAddAllergy={addAllergy}
-                                onEditStart={(allergy) => {
-                                    setEditingAllergy(allergy.id);
-                                    setEditingAllergyData({
-                                        name: allergy.name,
-                                        reaction: allergy.reaction || '',
-                                        severity: allergy.severity || 'mild',
-                                        isMedicine: allergy.isMedicine || false,
+                                <AllergiesSection
+                                    allergies={allergies}
+                                    newAllergy={newAllergy}
+                                    editingAllergy={editingAllergy}
+                                    editingAllergyData={editingAllergyData}
+                                    isAddingAllergy={isAddingAllergy}
+                                    onNewAllergyChange={(field, value) => setNewAllergy({ ...newAllergy, [field]: value } as any)}
+                                    onAddAllergy={addAllergy}
+                                    onEditStart={(allergy) => {
+                                        setEditingAllergy(allergy.id);
+                                        setEditingAllergyData({
+                                            name: allergy.name,
+                                            reaction: allergy.reaction || '',
+                                            severity: allergy.severity || 'mild',
+                                            isMedicine: allergy.isMedicine || false,
+                                        });
+                                    }}
+                                    onEditCancel={() => {
+                                        setEditingAllergy(null);
+                                        setEditingAllergyData({ name: '', reaction: '', severity: 'mild', isMedicine: false });
+                                    }}
+                                    onEditChange={(field, value) => setEditingAllergyData({ ...editingAllergyData, [field]: value })}
+                                    onEditSave={(id) => updateAllergy(id, editingAllergyData)}
+                                    onDelete={deleteAllergy}
+                                />
+                            </div>
+
+                            <DiagnosisSection
+                                diagnoses={diagnoses}
+                                newDiagnosis={newDiagnosis}
+                                editingDiagnosis={editingDiagnosis}
+                                editingDiagnosisData={editingDiagnosisData}
+                                isAddingDiagnosis={isAddingDiagnosis}
+                                onNewDiagnosisChange={(field, value) => setNewDiagnosis({ ...newDiagnosis, [field]: value })}
+                                onAddDiagnosis={addDiagnosis}
+                                onEditStart={(diagnosis) => {
+                                    setEditingDiagnosis(diagnosis.id);
+                                    setEditingDiagnosisData({
+                                        name: diagnosis.name,
+                                        severity: diagnosis.severity || '',
+                                        diagnosisDate: diagnosis.diagnosisDate ? new Date(diagnosis.diagnosisDate).toISOString().split('T')[0] : '',
+                                        description: diagnosis.description || '',
                                     });
                                 }}
                                 onEditCancel={() => {
-                                    setEditingAllergy(null);
-                                    setEditingAllergyData({ name: '', reaction: '', severity: 'mild', isMedicine: false });
+                                    setEditingDiagnosis(null);
+                                    setEditingDiagnosisData(null);
                                 }}
-                                onEditChange={(field, value) => setEditingAllergyData({ ...editingAllergyData, [field]: value })}
-                                onEditSave={(id) => updateAllergy(id, editingAllergyData)}
-                                onDelete={deleteAllergy}
+                                onEditChange={(field, value) => setEditingDiagnosisData({ ...editingDiagnosisData!, [field]: value })}
+                                onEditSave={(id) => updateDiagnosis(id, editingDiagnosisData!)}
+                                onDelete={deleteDiagnosis}
+                                onReorder={reorderDiagnoses}
                             />
 
                             <EmergencyContactsSection
@@ -906,6 +1214,15 @@ export default function DashboardPage() {
                 isDeleting={deleteModal.isDeleting}
                 onClose={() => setDeleteModal({ isOpen: false, type: null, id: null, name: '', isDeleting: false })}
                 onConfirm={handleConfirmDelete}
+            />
+
+            <CommandPalette
+                isOpen={isCommandPaletteOpen}
+                onClose={() => setIsCommandPaletteOpen(false)}
+                onAddMedicine={handleCommandPaletteAddMedicine}
+                onAddAllergy={handleCommandPaletteAddAllergy}
+                onAddDiagnosis={handleCommandPaletteAddDiagnosis}
+                isAdding={isCommandPaletteAdding}
             />
         </main>
     );

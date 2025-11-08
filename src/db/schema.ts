@@ -1,5 +1,6 @@
 import {
   boolean,
+  int,
   mysqlTable,
   text,
   timestamp,
@@ -13,6 +14,7 @@ export const user = mysqlTable("user", {
   username: varchar("username", { length: 50 }).unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   image: text("image"),
+  isAdmin: boolean("is_admin").default(false).notNull(),
   createdAt: timestamp("created_at", { fsp: 3 }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { fsp: 3 })
     .defaultNow()
@@ -135,6 +137,23 @@ export const emergencyContact = mysqlTable("emergency_contact", {
     .notNull(),
 });
 
+export const diagnosis = mysqlTable("diagnosis", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  pageId: varchar("page_id", { length: 36 })
+    .notNull()
+    .references(() => page.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  severity: varchar("severity", { length: 20 }),
+  diagnosisDate: timestamp("diagnosis_date", { fsp: 3 }),
+  description: text("description"),
+  displayOrder: int("display_order").default(0).notNull(),
+  createdAt: timestamp("created_at", { fsp: 3 }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { fsp: 3 })
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
 export const schema = {
   user,
   session,
@@ -144,4 +163,5 @@ export const schema = {
   medicine,
   allergy,
   emergencyContact,
+  diagnosis,
 };

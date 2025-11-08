@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 interface DeleteModalProps {
     isOpen: boolean;
-    type: 'medicine' | 'allergy' | 'contact' | null;
+    type: 'medicine' | 'allergy' | 'diagnosis' | 'contact' | null;
     name: string;
     isDeleting: boolean;
     onClose: () => void;
@@ -43,6 +43,7 @@ export function DeleteModal({ isOpen, type, name, isDeleting, onClose, onConfirm
                         <p className="text-sm text-gray-600">
                             {type === 'medicine' && 'Delete Medicine'}
                             {type === 'allergy' && 'Delete Allergy'}
+                            {type === 'diagnosis' && 'Delete Diagnosis'}
                             {type === 'contact' && 'Delete Emergency Contact'}
                         </p>
                     </div>

@@ -4,6 +4,8 @@ import { env } from '@/env/server';
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from 'better-auth/next-js';
+// Note: Admin assignment for first user is handled by the migration script
+// See scripts/apply-admin-migration.ts
 
 
 export const auth = betterAuth({

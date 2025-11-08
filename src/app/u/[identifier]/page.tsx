@@ -34,6 +34,13 @@ interface PublicPageData {
         severity: string;
         isMedicine: boolean;
     }>;
+    diagnoses: Array<{
+        id: string;
+        name: string;
+        severity: string | null;
+        diagnosisDate: string | null;
+        description: string | null;
+    }>;
     contacts: Array<{
         id: string;
         name: string;
@@ -179,7 +186,7 @@ export default function PublicPage() {
         );
     }
 
-    const { page, medicines, allergies, contacts } = data;
+    const { page, medicines, allergies, diagnoses, contacts } = data;
     const fullName = [page.firstName, page.lastName].filter(Boolean).join(' ') || page.userName || 'User';
 
     return (
@@ -434,6 +441,93 @@ export default function PublicPage() {
                         </motion.div>
                     )}
 
+                    {/* Diagnoses Section */}
+                    {diagnoses && diagnoses.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.25 }}
+                            className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+                        >
+                            <div className="mb-6 flex items-center gap-3">
+                                <div className="rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 p-3 shadow-md">
+                                    <Stethoscope className="h-6 w-6 text-white" />
+                                </div>
+                                <h2 className="text-2xl font-bold text-gray-900">Diagnoses & Conditions</h2>
+                            </div>
+                            <div className="grid gap-4 md:grid-cols-2">
+                                {diagnoses.map((diagnosis) => {
+                                    const severityColors = {
+                                        critical: {
+                                            border: 'border-red-500',
+                                            bg: 'bg-red-50',
+                                            text: 'text-red-900',
+                                            badge: 'bg-red-600 text-white',
+                                        },
+                                        severe: {
+                                            border: 'border-orange-400',
+                                            bg: 'bg-orange-50',
+                                            text: 'text-orange-900',
+                                            badge: 'bg-orange-500 text-white',
+                                        },
+                                        moderate: {
+                                            border: 'border-yellow-400',
+                                            bg: 'bg-yellow-50',
+                                            text: 'text-yellow-900',
+                                            badge: 'bg-yellow-500 text-white',
+                                        },
+                                        mild: {
+                                            border: 'border-green-400',
+                                            bg: 'bg-green-50',
+                                            text: 'text-green-900',
+                                            badge: 'bg-green-500 text-white',
+                                        },
+                                    };
+
+                                    const colors = diagnosis.severity
+                                        ? severityColors[diagnosis.severity as keyof typeof severityColors] || severityColors.moderate
+                                        : {
+                                              border: 'border-gray-300',
+                                              bg: 'bg-gray-50',
+                                              text: 'text-gray-900',
+                                              badge: 'bg-gray-500 text-white',
+                                          };
+
+                                    return (
+                                        <div
+                                            key={diagnosis.id}
+                                            className={`rounded-lg border-2 ${colors.border} ${colors.bg} p-4 transition-all hover:shadow-md`}
+                                        >
+                                            <div className="mb-2 flex items-center gap-2">
+                                                <h3 className={`font-semibold ${colors.text}`}>{diagnosis.name}</h3>
+                                                {diagnosis.severity && (
+                                                    <span
+                                                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${colors.badge}`}
+                                                    >
+                                                        {diagnosis.severity}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {diagnosis.diagnosisDate && (
+                                                <p className={`mb-2 text-sm ${colors.text}`}>
+                                                    <span className="font-medium">Diagnosed:</span>{' '}
+                                                    {new Date(diagnosis.diagnosisDate).toLocaleDateString('en-US', { 
+                                                        month: 'long', 
+                                                        day: 'numeric', 
+                                                        year: 'numeric' 
+                                                    })}
+                                                </p>
+                                            )}
+                                            {diagnosis.description && (
+                                                <p className={`text-sm ${colors.text} opacity-90`}>{diagnosis.description}</p>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </motion.div>
+                    )}
+
                     {/* Emergency Contacts Section */}
                     {contacts.length > 0 && (
                         <motion.div
@@ -513,7 +607,7 @@ export default function PublicPage() {
                     )}
 
                     {/* Empty State */}
-                    {medicines.length === 0 && allergies.length === 0 && contacts.length === 0 && (
+                    {medicines.length === 0 && allergies.length === 0 && (!diagnoses || diagnoses.length === 0) && contacts.length === 0 && (
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}

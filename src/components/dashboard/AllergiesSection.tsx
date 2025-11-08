@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion';
 import { AlertTriangle, Check, Edit2, Loader2, Plus, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { AutocompleteInput } from './AutocompleteInput';
+import { COMMON_ALLERGIES } from '@/lib/medical-data';
 
 interface Allergy {
     id: string;
@@ -56,57 +58,72 @@ export function AllergiesSection({
             </div>
 
             {/* Add Allergy Form */}
-            <div className="mb-6 grid gap-4 rounded-lg border-2 border-gray-200 bg-white p-4 md:grid-cols-5">
-                <input
-                    type="text"
-                    value={newAllergy.name}
-                    onChange={(e) => onNewAllergyChange('name', e.target.value)}
-                    placeholder="Allergy name"
-                    className="rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
-                />
-                <input
-                    type="text"
-                    value={newAllergy.reaction}
-                    onChange={(e) => onNewAllergyChange('reaction', e.target.value)}
-                    placeholder="Reaction (optional)"
-                    className="rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 placeholder:text-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
-                />
-                <select
-                    value={newAllergy.severity}
-                    onChange={(e) => onNewAllergyChange('severity', e.target.value)}
-                    className="rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-gray-900 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
-                >
-                    <option value="mild">Mild</option>
-                    <option value="moderate">Moderate</option>
-                    <option value="severe">Severe</option>
-                    <option value="life-threatening">Life-threatening</option>
-                </select>
-                <label className="flex items-center gap-2 rounded-lg border-2 border-gray-200 bg-white px-4 py-2">
-                    <input
-                        type="checkbox"
-                        checked={newAllergy.isMedicine}
-                        onChange={(e) => onNewAllergyChange('isMedicine', e.target.checked)}
-                        className="h-4 w-4 rounded border-gray-300 text-cyan-500 focus:ring-cyan-400/20"
-                    />
-                    <span className="text-sm text-gray-700">Medicine</span>
-                </label>
-                <Button
-                    onClick={onAddAllergy}
-                    disabled={isAddingAllergy}
-                    className="cursor-pointer bg-gradient-to-r from-teal-500 via-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30 hover:from-teal-600 hover:via-cyan-600 hover:to-blue-600 hover:shadow-xl hover:shadow-cyan-500/40 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                    {isAddingAllergy ? (
-                        <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Adding...
-                        </>
-                    ) : (
-                        <>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add
-                        </>
-                    )}
-                </Button>
+            <div className="mb-6 space-y-4 rounded-lg border-2 border-gray-200 bg-white p-6">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <div>
+                        <label className="mb-2 block text-sm font-medium text-gray-700">Allergy Name</label>
+                        <AutocompleteInput
+                            value={newAllergy.name}
+                            onChange={(value) => onNewAllergyChange('name', value)}
+                            placeholder="Enter allergy name"
+                            suggestions={COMMON_ALLERGIES}
+                            className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2.5 text-gray-900 placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 focus:outline-none"
+                        />
+                    </div>
+                    <div>
+                        <label className="mb-2 block text-sm font-medium text-gray-700">Reaction</label>
+                        <input
+                            type="text"
+                            value={newAllergy.reaction}
+                            onChange={(e) => onNewAllergyChange('reaction', e.target.value)}
+                            placeholder="Reaction (optional)"
+                            className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2.5 text-gray-900 placeholder:text-gray-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 focus:outline-none"
+                        />
+                    </div>
+                    <div>
+                        <label className="mb-2 block text-sm font-medium text-gray-700">Severity</label>
+                        <select
+                            value={newAllergy.severity}
+                            onChange={(e) => onNewAllergyChange('severity', e.target.value)}
+                            className="w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2.5 text-gray-900 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 focus:outline-none"
+                        >
+                            <option value="mild">Mild</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="severe">Severe</option>
+                            <option value="life-threatening">Life-threatening</option>
+                        </select>
+                    </div>
+                    <div className="flex items-end">
+                        <label className="flex w-full items-center gap-2 rounded-lg border-2 border-gray-200 bg-white px-4 py-2.5">
+                            <input
+                                type="checkbox"
+                                checked={newAllergy.isMedicine}
+                                onChange={(e) => onNewAllergyChange('isMedicine', e.target.checked)}
+                                className="h-4 w-4 rounded border-gray-300 text-pink-500 focus:ring-pink-400/20"
+                            />
+                            <span className="text-sm font-medium text-gray-700">Medicine</span>
+                        </label>
+                    </div>
+                </div>
+                <div className="flex justify-end">
+                    <Button
+                        onClick={onAddAllergy}
+                        disabled={isAddingAllergy}
+                        className="cursor-pointer bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 text-white shadow-lg shadow-pink-500/30 hover:from-pink-600 hover:via-rose-600 hover:to-red-600 hover:shadow-xl hover:shadow-pink-500/40 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        {isAddingAllergy ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Adding...
+                            </>
+                        ) : (
+                            <>
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Allergy
+                            </>
+                        )}
+                    </Button>
+                </div>
             </div>
 
             {/* Allergies List */}
@@ -118,13 +135,12 @@ export function AllergiesSection({
                         <div key={allergy.id} className="flex items-center gap-4 rounded-lg border-2 border-gray-200 bg-white p-4 shadow-sm">
                             {editingAllergy === allergy.id ? (
                                 <>
-                                    <input
-                                        type="text"
+                                    <AutocompleteInput
                                         value={editingAllergyData.name}
-                                        onChange={(e) => onEditChange('name', e.target.value)}
-                                        className="flex-1 rounded-lg border-2 border-gray-200 bg-white px-3 py-2 text-gray-900 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
+                                        onChange={(value) => onEditChange('name', value)}
                                         placeholder="Allergy name"
-                                        autoFocus
+                                        suggestions={COMMON_ALLERGIES}
+                                        className="flex-1 rounded-lg border-2 border-gray-200 bg-white px-3 py-2 text-gray-900 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
                                     />
                                     <input
                                         type="text"

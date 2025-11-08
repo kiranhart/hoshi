@@ -1,6 +1,6 @@
 import db from '@/db';
-import { page, user, medicine, allergy, emergencyContact } from '@/db/schema';
-import { eq, or } from 'drizzle-orm';
+import { page, user, medicine, allergy, emergencyContact, diagnosis } from '@/db/schema';
+import { eq, or, asc } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -64,6 +64,13 @@ export async function GET(
       .from(emergencyContact)
       .where(eq(emergencyContact.pageId, foundPage.id));
 
+    // Get diagnoses
+    const diagnoses = await db
+      .select()
+      .from(diagnosis)
+      .where(eq(diagnosis.pageId, foundPage.id))
+      .orderBy(asc(diagnosis.displayOrder), asc(diagnosis.createdAt));
+
     return NextResponse.json({
       page: {
         ...foundPage,
@@ -72,6 +79,7 @@ export async function GET(
       },
       medicines,
       allergies,
+      diagnoses,
       contacts,
     });
   } catch (error) {
