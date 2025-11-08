@@ -31,10 +31,10 @@ export function PageInformationSection({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+            className="rounded-lg border border-gray-200 bg-white/80 p-5 shadow-sm backdrop-blur-md"
         >
-            <div className="mb-6 flex items-center justify-between">
-                <h3 className="text-2xl font-semibold text-gray-900">Page Information</h3>
+            <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-xl font-semibold text-gray-900">Page Information</h3>
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                         {pageForm.isPrivate ? <Lock className="h-5 w-5 text-amber-500" /> : <Unlock className="h-5 w-5 text-green-500" />}
@@ -49,7 +49,7 @@ export function PageInformationSection({
                     </Button>
                 </div>
             </div>
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2">
                 <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700">First Name</label>
                     <input

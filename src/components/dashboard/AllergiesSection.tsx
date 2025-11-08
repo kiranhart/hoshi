@@ -41,17 +41,17 @@ export function AllergiesSection({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+            className="rounded-lg border border-gray-200 bg-white/80 p-5 shadow-sm backdrop-blur-md"
         >
-            <div className="mb-6 flex items-center gap-3">
-                <div className="rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 p-2 shadow-md">
-                    <AlertTriangle className="h-5 w-5 text-white" />
+            <div className="mb-4 flex items-center gap-2.5">
+                <div className="rounded-lg bg-gradient-to-br from-pink-400 to-rose-500 p-1.5 shadow-sm">
+                    <AlertTriangle className="h-4 w-4 text-white" />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900">Allergies</h3>
+                <h3 className="text-xl font-semibold text-gray-900">Allergies</h3>
             </div>
 
             {/* Add Allergy Form */}
-            <div className="mb-6 space-y-4 rounded-lg border-2 border-gray-200 bg-white p-6">
+            <div className="mb-4 space-y-3 rounded-lg border border-gray-200 bg-white p-4">
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div>
                         <label className="mb-2 block text-sm font-medium text-gray-700">Allergy Name</label>
@@ -120,12 +120,12 @@ export function AllergiesSection({
             </div>
 
             {/* Allergies List */}
-            <div className="space-y-3">
+            <div className="space-y-2">
                 {allergies.length === 0 ? (
                     <p className="py-8 text-center text-gray-500">No allergies added yet.</p>
                 ) : (
                     allergies.map((allergy) => (
-                        <div key={allergy.id} className="flex items-center gap-4 rounded-lg border-2 border-gray-200 bg-white p-4 shadow-sm">
+                        <div key={allergy.id} className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
                             {editingAllergy === allergy.id ? (
                                 <>
                                     <AutocompleteInput

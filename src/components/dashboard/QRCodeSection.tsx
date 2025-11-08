@@ -85,13 +85,13 @@ export function QRCodeSection({ uniqueKey, pageUrl }: QRCodeSectionProps) {
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+            className="rounded-lg border border-gray-200 bg-white/80 p-5 shadow-sm backdrop-blur-md"
         >
-            <div className="mb-6 flex items-center gap-3">
-                <div className="rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 p-3 shadow-md">
-                    <QrCode className="h-6 w-6 text-white" />
+            <div className="mb-4 flex items-center gap-2.5">
+                <div className="rounded-lg bg-gradient-to-br from-rose-400 to-pink-500 p-1.5 shadow-sm">
+                    <QrCode className="h-4 w-4 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">Share Your Medical Information</h2>
+                <h2 className="text-xl font-bold text-gray-900">Share Your Medical Information</h2>
             </div>
 
             <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">

@@ -158,17 +158,17 @@ export function MedicinesSection({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+            className="rounded-lg border border-gray-200 bg-white/80 p-5 shadow-sm backdrop-blur-md"
         >
-            <div className="mb-6 flex items-center gap-3">
-                <div className="rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 p-2 shadow-md">
-                    <Pill className="h-5 w-5 text-white" />
+            <div className="mb-4 flex items-center gap-2.5">
+                <div className="rounded-lg bg-gradient-to-br from-rose-400 to-pink-500 p-1.5 shadow-sm">
+                    <Pill className="h-4 w-4 text-white" />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900">Medicines</h3>
+                <h3 className="text-xl font-semibold text-gray-900">Medicines</h3>
             </div>
 
             {/* Add Medicine Form */}
-            <div className="mb-6 space-y-4 rounded-lg border-2 border-gray-200 bg-white p-6">
+            <div className="mb-4 space-y-3 rounded-lg border border-gray-200 bg-white p-4">
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     <div className="sm:col-span-2 lg:col-span-1">
                         <label className="mb-2 block text-sm font-medium text-gray-700">Medicine Name</label>
@@ -279,12 +279,12 @@ export function MedicinesSection({
             </div>
 
             {/* Medicines List */}
-            <div className="space-y-3">
+            <div className="space-y-2">
                 {medicines.length === 0 ? (
                     <p className="py-8 text-center text-gray-500">No medicines added yet.</p>
                 ) : (
                     medicines.map((medicine) => (
-                        <div key={medicine.id} className="flex items-center gap-4 rounded-lg border-2 border-gray-200 bg-white p-4 shadow-sm">
+                        <div key={medicine.id} className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
                             {editingMedicine === medicine.id ? (
                                 <>
                                     <AutocompleteInput

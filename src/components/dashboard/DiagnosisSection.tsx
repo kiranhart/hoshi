@@ -177,17 +177,17 @@ export function DiagnosisSection({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+            className="rounded-lg border border-gray-200 bg-white/80 p-5 shadow-sm backdrop-blur-md"
         >
-            <div className="mb-6 flex items-center gap-3">
-                <div className="rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 p-2 shadow-md">
-                    <Stethoscope className="h-5 w-5 text-white" />
+            <div className="mb-4 flex items-center gap-2.5">
+                <div className="rounded-lg bg-gradient-to-br from-rose-400 to-pink-500 p-1.5 shadow-sm">
+                    <Stethoscope className="h-4 w-4 text-white" />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900">Diagnoses & Conditions</h3>
+                <h3 className="text-xl font-semibold text-gray-900">Diagnoses & Conditions</h3>
             </div>
 
             {/* Add Diagnosis Form */}
-            <div className="mb-6 space-y-4 rounded-lg border-2 border-gray-200 bg-white p-6">
+            <div className="mb-4 space-y-3 rounded-lg border border-gray-200 bg-white p-4">
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div className="sm:col-span-2 lg:col-span-2">
                         <label className="mb-2 block text-sm font-medium text-gray-700">Diagnosis/Condition Name</label>
@@ -255,7 +255,7 @@ export function DiagnosisSection({
             </div>
 
             {/* Diagnoses List */}
-            <div className="space-y-3">
+            <div className="space-y-2">
                 {localDiagnoses.length === 0 ? (
                     <div className="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 py-12 text-center">
                         <Stethoscope className="mx-auto mb-3 h-12 w-12 text-gray-400" />
@@ -291,7 +291,7 @@ export function DiagnosisSection({
                                     onDragLeave={handleDragLeave}
                                     onDrop={(e) => handleDrop(e, index)}
                                     onDragEnd={handleDragEnd}
-                                    className={`group flex items-start gap-3 rounded-xl border-2 bg-white p-5 shadow-sm transition-all duration-200 ${
+                                    className={`group flex items-start gap-2.5 rounded-lg border bg-white p-3 shadow-sm transition-all duration-200 ${
                                         draggedIndex === index
                                             ? 'scale-95 border-rose-400 opacity-40 shadow-lg'
                                             : dragOverIndex === index && draggedIndex !== null

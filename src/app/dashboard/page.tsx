@@ -4,12 +4,13 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { motion } from 'framer-motion';
-import { Activity, Heart, Pill, Stethoscope, User } from 'lucide-react';
+import { Activity, AlertTriangle, Heart, LayoutDashboard, Phone, Pill, QrCode, Stethoscope, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { AllergiesSection } from '@/components/dashboard/AllergiesSection';
 import { CommandPalette } from '@/components/dashboard/CommandPalette';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
+import { DashboardSidebar, type DashboardSection } from '@/components/dashboard/DashboardSidebar';
 import { DeleteModal } from '@/components/dashboard/DeleteModal';
 import { DiagnosisSection } from '@/components/dashboard/DiagnosisSection';
 import { EmergencyContactsSection } from '@/components/dashboard/EmergencyContactsSection';
@@ -97,6 +98,10 @@ export default function DashboardPage() {
     const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
     const [isCommandPaletteAdding, setIsCommandPaletteAdding] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+
+    // Sidebar navigation state
+    const [activeSection, setActiveSection] = useState<DashboardSection>('overview');
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     // Check username and load page data on mount
     useEffect(() => {
@@ -1062,149 +1067,263 @@ export default function DashboardPage() {
                     isAdmin={isAdmin}
                 />
 
-                {/* Main Content */}
-                <div className="mx-auto max-w-7xl px-6 py-12">
-                    {isLoadingPage ? (
-                        <div className="flex items-center justify-center py-12">
-                            <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}>
-                                <div className="rounded-full bg-gradient-to-br from-rose-400 via-pink-400 to-rose-500 p-3">
-                                    <Heart className="h-6 w-6 text-white" fill="white" />
-                                </div>
-                            </motion.div>
-                        </div>
-                    ) : (
-                        <>
-                            {/* Welcome Section */}
-                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-8">
-                                <h2 className="mb-2 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 bg-clip-text text-4xl font-bold text-transparent md:text-5xl">
-                                    Manage Your Medical Profile
-                                </h2>
-                                <p className="text-lg text-gray-600">Fill out your information to create your medical link page.</p>
-                            </motion.div>
-
-                            {pageData?.uniqueKey && (
-                                <QRCodeSection
-                                    uniqueKey={pageData.uniqueKey}
-                                    pageUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/u/${pageData.uniqueKey}`}
-                                />
-                            )}
-
-                            <PageInformationSection
-                                pageForm={pageForm}
-                                pageData={pageData}
-                                isSavingPage={isSavingPage}
-                                onFormChange={(field, value) => setPageForm({ ...pageForm, [field]: value })}
-                                onSave={savePageData}
+                {/* Main Content Area */}
+                <main className="overflow-x-hidden">
+                    <div className="mx-auto max-w-7xl px-4 py-4 lg:px-6">
+                        <div className="flex gap-4">
+                            <DashboardSidebar
+                                activeSection={activeSection}
+                                onSectionChange={setActiveSection}
+                                isMobileOpen={isMobileSidebarOpen}
+                                onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
                             />
 
-                            <div className="grid gap-8 lg:grid-cols-2">
-                                <MedicinesSection
-                                    medicines={medicines}
-                                    newMedicine={newMedicine}
-                                    editingMedicine={editingMedicine}
-                                    editingMedicineData={editingMedicineData}
-                                    isAddingMedicine={isAddingMedicine}
-                                    onNewMedicineChange={(field, value) => setNewMedicine({ ...newMedicine, [field]: value })}
-                                    onAddMedicine={addMedicine}
-                                    onEditStart={(medicine) => {
-                                        setEditingMedicine(medicine.id);
-                                        setEditingMedicineData({
-                                            name: medicine.name,
-                                            dosage: medicine.dosage || '',
-                                            frequency: medicine.frequency || '',
-                                        });
-                                    }}
-                                    onEditCancel={() => {
-                                        setEditingMedicine(null);
-                                        setEditingMedicineData(null);
-                                    }}
-                                    onEditChange={(field, value) => setEditingMedicineData({ ...editingMedicineData!, [field]: value })}
-                                    onEditSave={(id) => updateMedicine(id, editingMedicineData!)}
-                                    onDelete={deleteMedicine}
-                                />
+                            {/* Content Section */}
+                            <div className="flex-1">
+                                {isLoadingPage ? (
+                                    <div className="flex items-center justify-center py-12">
+                                        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}>
+                                            <div className="rounded-full bg-gradient-to-br from-rose-400 via-pink-400 to-rose-500 p-3">
+                                                <Heart className="h-6 w-6 text-white" fill="white" />
+                                            </div>
+                                        </motion.div>
+                                    </div>
+                                ) : (
+                                    <motion.div
+                                        key={activeSection}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        {activeSection === 'overview' && (
+                                        <>
+                                            {/* Welcome Section */}
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.1 }}
+                                                className="mb-4 pt-4"
+                                            >
+                                                <h2 className="mb-1 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 bg-clip-text text-2xl font-bold text-transparent md:text-3xl">
+                                                    Welcome to Your Dashboard
+                                                </h2>
+                                                <p className="text-sm text-gray-600">Manage your medical profile and information.</p>
+                                            </motion.div>
 
-                                <AllergiesSection
-                                    allergies={allergies}
-                                    newAllergy={newAllergy}
-                                    editingAllergy={editingAllergy}
-                                    editingAllergyData={editingAllergyData}
-                                    isAddingAllergy={isAddingAllergy}
-                                    onNewAllergyChange={(field, value) => setNewAllergy({ ...newAllergy, [field]: value } as any)}
-                                    onAddAllergy={addAllergy}
-                                    onEditStart={(allergy) => {
-                                        setEditingAllergy(allergy.id);
-                                        setEditingAllergyData({
-                                            name: allergy.name,
-                                            reaction: allergy.reaction || '',
-                                            severity: allergy.severity || 'mild',
-                                            isMedicine: allergy.isMedicine || false,
-                                        });
-                                    }}
-                                    onEditCancel={() => {
-                                        setEditingAllergy(null);
-                                        setEditingAllergyData({ name: '', reaction: '', severity: 'mild', isMedicine: false });
-                                    }}
-                                    onEditChange={(field, value) => setEditingAllergyData({ ...editingAllergyData, [field]: value })}
-                                    onEditSave={(id) => updateAllergy(id, editingAllergyData)}
-                                    onDelete={deleteAllergy}
-                                />
+                                            {/* Quick Stats Grid */}
+                                            <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                                                <div className="rounded-lg border border-gray-200 bg-white/80 p-4 shadow-sm backdrop-blur-md">
+                                                    <div className="mb-1 flex items-center gap-2">
+                                                        <Pill className="h-4 w-4 text-rose-500" />
+                                                        <span className="text-xs font-medium text-gray-600">Medicines</span>
+                                                    </div>
+                                                    <p className="text-xl font-bold text-gray-900">{medicines.length}</p>
+                                                </div>
+                                                <div className="rounded-lg border border-gray-200 bg-white/80 p-4 shadow-sm backdrop-blur-md">
+                                                    <div className="mb-1 flex items-center gap-2">
+                                                        <AlertTriangle className="h-4 w-4 text-pink-500" />
+                                                        <span className="text-xs font-medium text-gray-600">Allergies</span>
+                                                    </div>
+                                                    <p className="text-xl font-bold text-gray-900">{allergies.length}</p>
+                                                </div>
+                                                <div className="rounded-lg border border-gray-200 bg-white/80 p-4 shadow-sm backdrop-blur-md">
+                                                    <div className="mb-1 flex items-center gap-2">
+                                                        <Stethoscope className="h-4 w-4 text-rose-500" />
+                                                        <span className="text-xs font-medium text-gray-600">Diagnoses</span>
+                                                    </div>
+                                                    <p className="text-xl font-bold text-gray-900">{diagnoses.length}</p>
+                                                </div>
+                                                <div className="rounded-lg border border-gray-200 bg-white/80 p-4 shadow-sm backdrop-blur-md">
+                                                    <div className="mb-1 flex items-center gap-2">
+                                                        <Phone className="h-4 w-4 text-pink-500" />
+                                                        <span className="text-xs font-medium text-gray-600">Contacts</span>
+                                                    </div>
+                                                    <p className="text-xl font-bold text-gray-900">{contacts.length}</p>
+                                                </div>
+                                            </div>
+
+                                            {/* Quick Actions */}
+                                            <div className="rounded-lg border border-gray-200 bg-white/80 p-4 shadow-sm backdrop-blur-md">
+                                                <h3 className="mb-3 text-base font-semibold text-gray-900">Quick Actions</h3>
+                                                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                                                    <button
+                                                        onClick={() => setActiveSection('page-info')}
+                                                        className="rounded-lg border border-gray-200 bg-white p-3 text-left transition-all hover:border-rose-300 hover:bg-rose-50"
+                                                    >
+                                                        <LayoutDashboard className="mb-1.5 h-4 w-4 text-rose-500" />
+                                                        <p className="text-sm font-medium text-gray-900">Page Information</p>
+                                                        <p className="text-xs text-gray-600">Update your profile</p>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setActiveSection('medicines')}
+                                                        className="rounded-lg border border-gray-200 bg-white p-3 text-left transition-all hover:border-rose-300 hover:bg-rose-50"
+                                                    >
+                                                        <Pill className="mb-1.5 h-4 w-4 text-rose-500" />
+                                                        <p className="text-sm font-medium text-gray-900">Medicines</p>
+                                                        <p className="text-xs text-gray-600">Manage medications</p>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setActiveSection('allergies')}
+                                                        className="rounded-lg border border-gray-200 bg-white p-3 text-left transition-all hover:border-rose-300 hover:bg-rose-50"
+                                                    >
+                                                        <AlertTriangle className="mb-1.5 h-4 w-4 text-pink-500" />
+                                                        <p className="text-sm font-medium text-gray-900">Allergies</p>
+                                                        <p className="text-xs text-gray-600">Track allergies</p>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setActiveSection('qr-code')}
+                                                        className="rounded-lg border border-gray-200 bg-white p-3 text-left transition-all hover:border-rose-300 hover:bg-rose-50"
+                                                    >
+                                                        <QrCode className="mb-1.5 h-4 w-4 text-rose-500" />
+                                                        <p className="text-sm font-medium text-gray-900">QR Code</p>
+                                                        <p className="text-xs text-gray-600">View your QR code</p>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+
+                                        {activeSection === 'page-info' && (
+                                            <PageInformationSection
+                                            pageForm={pageForm}
+                                            pageData={pageData}
+                                            isSavingPage={isSavingPage}
+                                            onFormChange={(field, value) => setPageForm({ ...pageForm, [field]: value })}
+                                                onSave={savePageData}
+                                            />
+                                        )}
+
+                                        {activeSection === 'medicines' && (
+                                            <MedicinesSection
+                                            medicines={medicines}
+                                            newMedicine={newMedicine}
+                                            editingMedicine={editingMedicine}
+                                            editingMedicineData={editingMedicineData}
+                                            isAddingMedicine={isAddingMedicine}
+                                            onNewMedicineChange={(field, value) => setNewMedicine({ ...newMedicine, [field]: value })}
+                                            onAddMedicine={addMedicine}
+                                            onEditStart={(medicine) => {
+                                                setEditingMedicine(medicine.id);
+                                                setEditingMedicineData({
+                                                    name: medicine.name,
+                                                    dosage: medicine.dosage || '',
+                                                    frequency: medicine.frequency || '',
+                                                });
+                                            }}
+                                            onEditCancel={() => {
+                                                setEditingMedicine(null);
+                                                setEditingMedicineData(null);
+                                            }}
+                                            onEditChange={(field, value) => setEditingMedicineData({ ...editingMedicineData!, [field]: value })}
+                                            onEditSave={(id) => updateMedicine(id, editingMedicineData!)}
+                                                onDelete={deleteMedicine}
+                                            />
+                                        )}
+
+                                        {activeSection === 'allergies' && (
+                                            <AllergiesSection
+                                            allergies={allergies}
+                                            newAllergy={newAllergy}
+                                            editingAllergy={editingAllergy}
+                                            editingAllergyData={editingAllergyData}
+                                            isAddingAllergy={isAddingAllergy}
+                                            onNewAllergyChange={(field, value) => setNewAllergy({ ...newAllergy, [field]: value } as any)}
+                                            onAddAllergy={addAllergy}
+                                            onEditStart={(allergy) => {
+                                                setEditingAllergy(allergy.id);
+                                                setEditingAllergyData({
+                                                    name: allergy.name,
+                                                    reaction: allergy.reaction || '',
+                                                    severity: allergy.severity || 'mild',
+                                                    isMedicine: allergy.isMedicine || false,
+                                                });
+                                            }}
+                                            onEditCancel={() => {
+                                                setEditingAllergy(null);
+                                                setEditingAllergyData({ name: '', reaction: '', severity: 'mild', isMedicine: false });
+                                            }}
+                                            onEditChange={(field, value) => setEditingAllergyData({ ...editingAllergyData, [field]: value })}
+                                            onEditSave={(id) => updateAllergy(id, editingAllergyData)}
+                                                onDelete={deleteAllergy}
+                                            />
+                                        )}
+
+                                        {activeSection === 'diagnosis' && (
+                                            <DiagnosisSection
+                                            diagnoses={diagnoses}
+                                            newDiagnosis={newDiagnosis}
+                                            editingDiagnosis={editingDiagnosis}
+                                            editingDiagnosisData={editingDiagnosisData}
+                                            isAddingDiagnosis={isAddingDiagnosis}
+                                            onNewDiagnosisChange={(field, value) => setNewDiagnosis({ ...newDiagnosis, [field]: value })}
+                                            onAddDiagnosis={addDiagnosis}
+                                            onEditStart={(diagnosis) => {
+                                                setEditingDiagnosis(diagnosis.id);
+                                                setEditingDiagnosisData({
+                                                    name: diagnosis.name,
+                                                    severity: diagnosis.severity || '',
+                                                    diagnosisDate: diagnosis.diagnosisDate ? new Date(diagnosis.diagnosisDate).toISOString().split('T')[0] : '',
+                                                    description: diagnosis.description || '',
+                                                });
+                                            }}
+                                            onEditCancel={() => {
+                                                setEditingDiagnosis(null);
+                                                setEditingDiagnosisData(null);
+                                            }}
+                                            onEditChange={(field, value) => setEditingDiagnosisData({ ...editingDiagnosisData!, [field]: value })}
+                                            onEditSave={(id) => updateDiagnosis(id, editingDiagnosisData!)}
+                                            onDelete={deleteDiagnosis}
+                                                onReorder={reorderDiagnoses}
+                                            />
+                                        )}
+
+                                        {activeSection === 'contacts' && (
+                                            <EmergencyContactsSection
+                                            contacts={contacts}
+                                            newContact={newContact}
+                                            editingContact={editingContact}
+                                            editingContactData={editingContactData}
+                                            isAddingContact={isAddingContact}
+                                            onNewContactChange={(field, value) => setNewContact({ ...newContact, [field]: value })}
+                                            onAddContact={addContact}
+                                            onEditStart={(contact) => {
+                                                setEditingContact(contact.id);
+                                                setEditingContactData({
+                                                    name: contact.name,
+                                                    phone: contact.phone || '',
+                                                    email: contact.email || '',
+                                                    relation: contact.relation || '',
+                                                });
+                                            }}
+                                            onEditCancel={() => {
+                                                setEditingContact(null);
+                                                setEditingContactData(null);
+                                            }}
+                                            onEditChange={(field, value) => setEditingContactData({ ...editingContactData!, [field]: value })}
+                                            onEditSave={(id) => updateContact(id, editingContactData!)}
+                                                onDelete={deleteContact}
+                                            />
+                                        )}
+
+                                        {activeSection === 'qr-code' && pageData?.uniqueKey && (
+                                            <QRCodeSection
+                                            uniqueKey={pageData.uniqueKey}
+                                                pageUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/u/${pageData.uniqueKey}`}
+                                            />
+                                        )}
+
+                                        {activeSection === 'qr-code' && !pageData?.uniqueKey && (
+                                            <div className="rounded-xl border border-gray-200 bg-white/80 p-8 text-center shadow-sm backdrop-blur-md">
+                                                <QrCode className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                                                <p className="text-gray-600">Please save your page information first to generate a QR code.</p>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
                             </div>
-
-                            <DiagnosisSection
-                                diagnoses={diagnoses}
-                                newDiagnosis={newDiagnosis}
-                                editingDiagnosis={editingDiagnosis}
-                                editingDiagnosisData={editingDiagnosisData}
-                                isAddingDiagnosis={isAddingDiagnosis}
-                                onNewDiagnosisChange={(field, value) => setNewDiagnosis({ ...newDiagnosis, [field]: value })}
-                                onAddDiagnosis={addDiagnosis}
-                                onEditStart={(diagnosis) => {
-                                    setEditingDiagnosis(diagnosis.id);
-                                    setEditingDiagnosisData({
-                                        name: diagnosis.name,
-                                        severity: diagnosis.severity || '',
-                                        diagnosisDate: diagnosis.diagnosisDate ? new Date(diagnosis.diagnosisDate).toISOString().split('T')[0] : '',
-                                        description: diagnosis.description || '',
-                                    });
-                                }}
-                                onEditCancel={() => {
-                                    setEditingDiagnosis(null);
-                                    setEditingDiagnosisData(null);
-                                }}
-                                onEditChange={(field, value) => setEditingDiagnosisData({ ...editingDiagnosisData!, [field]: value })}
-                                onEditSave={(id) => updateDiagnosis(id, editingDiagnosisData!)}
-                                onDelete={deleteDiagnosis}
-                                onReorder={reorderDiagnoses}
-                            />
-
-                            <EmergencyContactsSection
-                                contacts={contacts}
-                                newContact={newContact}
-                                editingContact={editingContact}
-                                editingContactData={editingContactData}
-                                isAddingContact={isAddingContact}
-                                onNewContactChange={(field, value) => setNewContact({ ...newContact, [field]: value })}
-                                onAddContact={addContact}
-                                onEditStart={(contact) => {
-                                    setEditingContact(contact.id);
-                                    setEditingContactData({
-                                        name: contact.name,
-                                        phone: contact.phone || '',
-                                        email: contact.email || '',
-                                        relation: contact.relation || '',
-                                    });
-                                }}
-                                onEditCancel={() => {
-                                    setEditingContact(null);
-                                    setEditingContactData(null);
-                                }}
-                                onEditChange={(field, value) => setEditingContactData({ ...editingContactData!, [field]: value })}
-                                onEditSave={(id) => updateContact(id, editingContactData!)}
-                                onDelete={deleteContact}
-                            />
-                        </>
-                    )}
-                </div>
+                        </div>
+                    </div>
+                </main>
             </div>
 
             <DeleteModal

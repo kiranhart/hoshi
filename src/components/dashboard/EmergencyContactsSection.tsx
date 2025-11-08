@@ -39,17 +39,17 @@ export function EmergencyContactsSection({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="mb-8 rounded-2xl border border-gray-200 bg-white/80 p-8 shadow-xl backdrop-blur-md"
+            className="rounded-lg border border-gray-200 bg-white/80 p-5 shadow-sm backdrop-blur-md"
         >
-            <div className="mb-6 flex items-center gap-3">
-                <div className="rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 p-2 shadow-md">
-                    <Phone className="h-5 w-5 text-white" />
+            <div className="mb-4 flex items-center gap-2.5">
+                <div className="rounded-lg bg-gradient-to-br from-rose-400 to-pink-500 p-1.5 shadow-sm">
+                    <Phone className="h-4 w-4 text-white" />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900">Emergency Contacts</h3>
+                <h3 className="text-xl font-semibold text-gray-900">Emergency Contacts</h3>
             </div>
 
             {/* Add Contact Form */}
-            <div className="mb-6 grid gap-4 rounded-lg border-2 border-gray-200 bg-white p-4 md:grid-cols-5">
+            <div className="mb-4 grid gap-3 rounded-lg border border-gray-200 bg-white p-3 md:grid-cols-5">
                 <input
                     type="text"
                     value={newContact.name}
@@ -98,12 +98,12 @@ export function EmergencyContactsSection({
             </div>
 
             {/* Contacts List */}
-            <div className="space-y-3">
+            <div className="space-y-2">
                 {contacts.length === 0 ? (
                     <p className="py-8 text-center text-gray-500">No emergency contacts added yet.</p>
                 ) : (
                     contacts.map((contact) => (
-                        <div key={contact.id} className="flex items-center gap-4 rounded-lg border-2 border-gray-200 bg-white p-4 shadow-sm">
+                        <div key={contact.id} className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
                             {editingContact === contact.id ? (
                                 <>
                                     <input
